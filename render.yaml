@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: jee-smong
+    runtime: static
+    buildCommand: node build.js
+    staticPublishPath: .
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false

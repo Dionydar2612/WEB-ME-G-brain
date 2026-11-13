@@ -1,0 +1,19 @@
+{
+  "name": "pokemon-news-scraper",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Pokémon TCG news scraper + AI summarizer (runs in GitHub Actions, writes to Supabase)",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dry-run": "node index.js --dry-run --force",
+    "test": "node --test test/scraper.test.js test/tcg.test.js",
+    "tcg": "node sync-tcg.js",
+    "tcg-dry-run": "node sync-tcg.js --dry-run"
+  },
+  "dependencies": {
+    "cheerio": "1.0.0"
+  }
+}

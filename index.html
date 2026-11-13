@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>จี่สมอง</title>
+<link rel="icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="decks.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{--bg:#f6f2ff;--card:#fff;--tx:#1e1033;--mut:#7a6a99;--bd:#e4daf7;--pri:#7c3aed;--pri2:#5b21b6;--win:#d1fae5;--loss:#fee2e2;--nav:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#130a24;--card:#1d1233;--tx:#f1eaff;--mut:#a794cc;--bd:#37255c;--pri:#8b5cf6;--pri2:#a78bfa;--win:#064e3b;--loss:#7f1d1d;--nav:#180e2c}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.6 'Prompt',system-ui,sans-serif;background:var(--bg);color:var(--tx);display:flex;min-height:100vh}
+nav{width:220px;padding:20px 14px;background:var(--nav);border-right:1px solid var(--bd);position:sticky;top:0;height:100vh;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:10px;margin:0 6px 20px}.brand img{width:44px;height:44px}
+.brand b{font-size:22px;font-weight:700;color:var(--pri2)}
+nav a{display:block;padding:9px 12px;margin:2px 0;border-radius:10px;color:var(--tx);text-decoration:none;font-weight:500;transition:.15s}
+nav a:hover{background:var(--bd)}nav a.on{background:var(--pri);color:#fff}
+main{flex:1;max-width:940px;margin:0 auto;padding:24px;min-width:0}
+.banner{display:block;width:100%;border-radius:18px;margin-bottom:20px;box-shadow:0 8px 30px #7c3aed33}
+h2{margin:8px 0 14px;font-weight:700}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 2px 8px #7c3aed0f}
+a{color:var(--pri2)}.win{background:var(--win)}.loss{background:var(--loss)}
+input,textarea,select,button{font:inherit;padding:9px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);max-width:100%}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--pri);border-color:transparent}
+textarea{width:100%;min-height:100px;margin:8px 0}
+button{background:var(--pri);color:#fff;border:0;cursor:pointer;font-weight:600;transition:.15s}button:hover{background:var(--pri2)}
+table{width:100%;border-collapse:collapse}td,th{padding:8px 6px;border-bottom:1px solid var(--bd);text-align:left}th{color:var(--mut);font-weight:500;font-size:13px}
+.mut{color:var(--mut);font-size:13px}.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.ok{color:#059669;font-weight:600}.bad{color:#dc2626}pre{white-space:pre-wrap}
+@media(max-width:700px){body{flex-direction:column}nav{width:100%;height:auto;position:static;border:0;display:flex;gap:4px;flex-wrap:wrap}.brand{width:100%}main{padding:14px}}
+.sec{font-size:11px;letter-spacing:1px;color:var(--mut);margin:14px 12px 4px;text-transform:uppercase}.adm{display:none}
+.admbar{background:linear-gradient(90deg,#f59e0b,#d97706);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}.stat{text-align:center;margin:0}.stat b{display:block;font-size:28px;color:var(--pri2)}
+button.ghost{background:var(--card);color:var(--tx);border:1px solid var(--bd)}.badge{font-size:12px;padding:2px 10px;border-radius:99px;background:var(--bd);margin-left:6px}.badge.a{background:#f59e0b;color:#fff}
+@media(max-width:700px){.sec{width:100%;margin:6px 0 0}}
+.news{display:flex;gap:14px;align-items:flex-start;padding:12px}.news>a{flex-shrink:0}.news img{width:130px;height:130px;object-fit:cover;border-radius:10px;display:block}
+.nb{min-width:0;flex:1}.nt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap;margin:4px 0;font-size:14px}.clamp.open{display:block}
+.links{display:flex;gap:14px;flex-wrap:wrap}
+@media(max-width:700px){.news img{width:86px;height:86px}.news{gap:10px}}
+.lh{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px}
+.pastebox{display:flex;gap:10px;align-items:flex-start}.pastebox textarea{min-height:64px;margin:0;flex:1}.pastebox button{white-space:nowrap}
+.tabbar{display:flex;justify-content:space-between;align-items:center;margin:8px 0}
+.pill{display:inline-flex;background:var(--bd);padding:4px;border-radius:12px;gap:2px}.pill button{background:transparent;color:var(--mut);padding:6px 16px}.pill button.on{background:var(--card);color:var(--tx);box-shadow:0 1px 3px #0002}
+.grp{margin:16px 0;border-bottom:1px solid var(--bd);padding-bottom:8px}.gh{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:8px 0;font-size:17px}
+.lrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;margin:6px 0}.lrow.win{background:var(--win)}.lrow.loss{background:var(--loss)}.lrow.tie{background:var(--bd)}
+.mini{padding:2px 8px;width:150px}.gb[hidden]{display:none}
+@media(max-width:700px){.pastebox{flex-direction:column}.pastebox button{width:100%}}
+.ov{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.md{background:var(--card);color:var(--tx);border-radius:16px;padding:20px;width:100%;max-width:440px;display:flex;flex-direction:column;gap:12px;max-height:90vh;overflow:auto}.md input,.md select,.md textarea{width:100%}
+.row.end{justify-content:flex-end}.row.two>*{flex:1;min-width:0}.wide{width:100%;padding:12px;margin:8px 0}.soft{background:var(--bd);color:var(--tx)}
+.trow{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:10px;padding:14px;margin:10px 0;border:1px solid var(--bd);border-radius:14px;background:var(--card);text-decoration:none;color:var(--tx)}.trow .ic{font-size:24px;text-align:center}
+.tbar{display:flex;gap:2px;margin:8px 0}button.ic{background:transparent;color:var(--tx);padding:6px 8px;font-size:16px}.big{font-size:28px;font-weight:700;line-height:1.2}
+.rt th,.rt td{padding:10px 6px}.chip{padding:2px 10px;border-radius:99px;font-size:13px;background:var(--bd)}.chip.win{background:var(--win)}.chip.loss{background:var(--loss)}
+.gm{display:flex;align-items:center;gap:6px;margin:8px 0}.gm .sp{flex:1}.ch{background:var(--card);color:var(--tx);border:1px solid var(--bd);padding:6px 14px}.ch.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut)}.sum{line-height:1.9;font-size:15px}tr.ok2{background:#10b98133}tr.mid{background:#f59e0b33}
+.ph{width:130px;height:130px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px;background:linear-gradient(135deg,var(--bd),var(--card));border:1px dashed var(--bd)}
+.nimg{flex-shrink:0;display:block}.nmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:2px}.chip.new{background:#ef4444;color:#fff;font-weight:600}.chip.pin{background:#f59e0b;color:#fff}
+.nt{color:var(--tx);text-decoration:none;font-size:16px}.nt:hover{text-decoration:underline}.nctl{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.nctl input{flex:1;min-width:180px}
+.npg{display:flex;justify-content:center;align-items:center;gap:12px;margin:16px 0;flex-wrap:wrap}button:disabled{opacity:.4;cursor:default}.disc{font-size:12px;margin-top:20px}.site-footer{border-top:1px solid var(--bd);margin-top:34px;padding:20px 4px 12px;color:var(--mut);font-size:13px}.site-footer p{margin:5px 0}.legal-links{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0}.gbrain-ph{flex-direction:column;gap:0;color:var(--pri2);font-weight:700;background:linear-gradient(135deg,#ede4ff,#faf7ff)}.gbrain-ph span{font-size:34px;line-height:1}.gbrain-ph small{font-size:9px;letter-spacing:2px}
+.ndt{margin:10px 0 6px}.nhero img,.nhero .ph{width:100%;max-height:340px;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:12px 0}.nhero .ph{height:200px;font-size:64px}
+.nsum{white-space:pre-wrap;line-height:1.8;margin:12px 0}.notice{background:var(--bd);border-radius:10px;padding:10px 14px;font-size:13px;margin:12px 0}.nsrc{margin:12px 0;font-size:14px}
+a.btn{display:inline-block;background:var(--pri);color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:600}a.btn:hover{background:var(--pri2)}
+.runbox{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:#9ca3af}.dot.success{background:#10b981}.dot.partial{background:#f59e0b}.dot.error{background:#ef4444}.dot.running{background:#3b82f6}
+@media(max-width:700px){.ph{width:86px;height:86px;font-size:28px}.nhero .ph{height:160px}}
+.cat-products{--cc:#e8250f}.cat-campaigns{--cc:#0b8a1e}.cat-events{--cc:#1530e0}.cat-tournaments{--cc:#7c3aed}.cat-announcements{--cc:#0284c7}.cat-columns{--cc:#f2b100}.cat-others{--cc:#9ca3af}.cat-all{--cc:#222}
+.card.news[class*="cat-"]{border-top:4px solid var(--cc)}.chip.tag{background:var(--cc);color:#fff;font-weight:600}.chip.tag.cat-columns{color:#222}
+.ctabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:8px 0 12px}
+.ctab{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-top:4px solid var(--cc);border-radius:6px;padding:12px 6px;font-weight:600}.ctab:hover{background:var(--bd)}.ctab.on{background:var(--cc);color:#fff;border-color:var(--cc)}.ctab.on.cat-columns{color:#222}
+.chip.src{font-size:12px;border:1px solid var(--bd);background:var(--card)}.chip.src.pg{background:#1877f2;color:#fff;border-color:#1877f2}.chip.src.off{background:var(--card);color:var(--tx)}#nsrc{display:flex;flex-wrap:wrap;margin:8px 0}
+</style></head><body>
+<nav><div class="brand"><img src="assets/mascot.webp" alt=""><b id="site"></b></div>
+<div class="sec">ทั่วไป</div><a href="#/news">📰 ข่าวสาร</a><a href="#/tours">🏆 Tournaments</a><a href="#/swiss">🧮 คำนวณ Cut</a><a href="#/decks">🃏 เด็คสาธารณะ</a><a href="#/cards">🎴 การ์ด</a>
+<div class="sec">ของฉัน</div><a href="#/logs">⚔️ Battle Logs</a><a href="#/stats">📊 Stats</a><a href="#/login" id="auth">Log In</a>
+<div class="sec adm">ผู้ดูแลระบบ</div><a href="#/admin" class="adm">🛡️ Admin Panel</a></nav>
+<main><img id="banner" class="banner" src="assets/banner.webp" alt="จี่สมอง"><div id="app"></div>
+<footer class="site-footer"><div><b>จี่สมอง · G-Brain</b><p>Independent, unofficial fan-made gaming community.</p></div>
+<div class="legal-links" aria-label="ข้อมูลเว็บไซต์"><a href="#/about">เกี่ยวกับเรา</a><a href="#/disclaimer">Disclaimer</a><a href="#/copyright">Copyright Policy</a><a href="#/contact">ติดต่อ / แจ้งสิทธิ์</a></div>
+<p class="mut">G-Brain ไม่ได้เป็นเว็บไซต์ทางการหรือมีความเกี่ยวข้องกับเจ้าของเครื่องหมายการค้าของเกมที่กล่าวถึง</p></footer></main>
+<script src="config.js"></script>
+<script src="decks.js"></script>
+<script>
+document.getElementById('site').textContent=SITE;
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=s=>document.querySelector(s),app=$('#app');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl=u=>/^https?:\/\//.test(u||'')?u:'';
+let user=null,role='user';const isAdmin=()=>role=='admin';
+const need=()=>user?false:(app.innerHTML='<div class="card">กรุณา <a href="#/login">Log In</a> ก่อน</div>',true);
+
+// ---------- Login ----------
+async function login(){
+  if(user){
+    const[{data:L},c]=await Promise.all([sb.from('battle_logs').select('result'),Promise.all(['tournaments','decklists'].map(async t=>(await sb.from(t).select('id',{count:'exact',head:true}).eq('user_id',user.id)).count||0))]);
+    const g=(L||[]).length,w=(L||[]).filter(x=>x.result=='win').length;
+    app.innerHTML=`<h2>บัญชีของฉัน</h2><div class="card"><b>${esc(user.email)}</b> <span class="badge ${isAdmin()?'a':''}">${isAdmin()?'Admin':'Player'}</span></div>
+    <div class="grid">${[['เกมที่บันทึก',g],['Win rate',(g?Math.round(w/g*100):0)+'%'],['ทัวร์ของฉัน',c[0]],['เด็คของฉัน',c[1]]].map(([l,v])=>`<div class="card stat"><b>${v}</b><span class="mut">${l}</span></div>`).join('')}</div>
+    <button id="out">Log out</button>`;
+    $('#out').onclick=async()=>{await sb.auth.signOut();location.hash='#/news'};return}
+  app.innerHTML=`<div class="card"><h2>Log In / Sign Up</h2><div class="row"><input id="em" placeholder="email"><input id="pw" type="password" placeholder="password (6+)"></div>
+  <button id="li">Log In</button> <button id="su">Sign Up</button><p id="msg" class="mut"></p></div>`;
+  const run=f=>async()=>{const{error}=await sb.auth[f]({email:$('#em').value,password:$('#pw').value});
+    if(error)$('#msg').textContent=error.message;else if(f=='signUp')$('#msg').textContent='สมัครแล้ว (ถ้าเปิด email confirm ให้เช็คเมล)';};
+  $('#li').onclick=run('signInWithPassword');$('#su').onclick=run('signUp');
+}
+
+// ---------- News ----------
+const NCATS={products:'สินค้า',events:'อีเวนต์',tournaments:'การแข่งขัน',campaigns:'แคมเปญ',announcements:'ประกาศทั่วไป',columns:'คอลัมน์',others:'อื่น ๆ'};
+const catTab=()=>`<div class="ctabs">${[['','ทั้งหมด'],...Object.entries(NCATS)].map(([k,v])=>`<button class="ctab cat-${k||'all'} ${nq.cat==k?'on':''}" data-c="${k}">${v}</button>`).join('')}</div>`;
+const catOpts=(sel,all)=>(all?`<option value="">ทุกหมวดหมู่</option>`:'')+Object.entries(NCATS).map(([k,v])=>`<option value="${k}" ${k==sel?'selected':''}>${v}</option>`).join('');
+const NEWS_COLS='id,title,original_title,summary,body,category,source_name,source_url,published_at,created_at,is_featured,ai_generated,fb_post_id,status';
+const NEWS_PER=12;let nq={q:'',cat:'',src:'',sort:'new',page:0};
+const SRCS=[['','ทั้งหมด'],['official','แหล่งข่าวภายนอก'],['page','ข่าวจากเพจ']];
+const srcTag=n=>n.source_name?'<span class="chip src off">'+esc(n.source_name)+'</span>':'<span class="chip src pg">'+(n.fb_post_id?'เพจ Facebook':'ทีมงาน')+'</span>';
+const nDate=n=>new Date(n.published_at||n.created_at);
+const fmtDate=d=>d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
+const isNewNews=n=>Date.now()-nDate(n)<3*864e5;
+const nImg=n=>`<div class="ph gbrain-ph" aria-hidden="true"><span>จี่</span><small>G-BRAIN</small></div>`;
+const srcLabel=n=>n.fb_post_id?'ดูบน Facebook':(n.source_name?'อ่านประกาศต้นฉบับ':'แหล่งข่าว');
+const DISCLAIMER='G-Brain เป็นเว็บไซต์ชุมชนแฟนเมดที่ไม่เป็นทางการ ไม่ได้มีความเกี่ยวข้อง ได้รับการรับรอง หรือได้รับการสนับสนุนจาก Nintendo, The Pokémon Company, Creatures Inc. หรือ GAME FREAK inc. เครื่องหมายการค้าและทรัพย์สินทางปัญญาของบุคคลภายนอกเป็นของเจ้าของสิทธิ์แต่ละราย';
+const fixImgs=root=>root.querySelectorAll('img[data-img]').forEach(i=>i.addEventListener('error',()=>{const d=document.createElement('div');d.className='ph';d.textContent='🃏';i.replaceWith(d)},{once:true}));
+
+async function news(id){
+  if(id)return newsDetail(id);
+  app.innerHTML=`<h2>News</h2>`+(isAdmin()?`<div class="card"><input id="nt" placeholder="หัวข้อข่าว"> <input id="nu" placeholder="ลิงก์ต้นทาง https://..."> <select id="nc">${catOpts('announcements')}</select><textarea id="nb" placeholder="เนื้อหา"></textarea><button id="np">โพสต์</button></div>`:'')+
+  `<div class="pill" id="nsrc">${SRCS.map(([k,v])=>`<button data-s="${k}" class="${nq.src==k?'on':''}">${v}</button>`).join('')}</div>${catTab()}<div class="nctl"><input id="nq" type="search" placeholder="ค้นหาจากชื่อเรื่อง…" value="${esc(nq.q)}"><select id="nsort"><option value="new" ${nq.sort=='new'?'selected':''}>ใหม่สุดก่อน</option><option value="old" ${nq.sort=='old'?'selected':''}>เก่าสุดก่อน</option></select></div><div id="nl"></div><div id="npg" class="npg"></div><p class="mut disc">${esc(DISCLAIMER)}</p>`;
+  if(isAdmin())$('#np').onclick=async()=>{const title=$('#nt').value.trim();if(!title)return;const{error}=await sb.from('news').insert({title,body:$('#nb').value,source_url:$('#nu').value.trim()||null,category:$('#nc').value,status:'published'});if(error)alert(error.message);else news()};
+  let t;$('#nq').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{nq.q=e.target.value.trim();nq.page=0;loadNews()},300)};
+  app.querySelectorAll('#nsrc button').forEach(b=>b.onclick=()=>{nq.src=b.dataset.s;nq.page=0;app.querySelectorAll('#nsrc button').forEach(x=>x.classList.toggle('on',x==b));loadNews()});
+  app.querySelectorAll('.ctab').forEach(b=>b.onclick=()=>{nq.cat=b.dataset.c;nq.page=0;app.querySelectorAll('.ctab').forEach(x=>x.classList.toggle('on',x==b));loadNews()});
+  $('#nsort').onchange=e=>{nq.sort=e.target.value;nq.page=0;loadNews()};
+  loadNews();
+}
+async function loadNews(){
+  const box=$('#nl');if(!box)return;
+  let q=sb.from('news').select(NEWS_COLS,{count:'exact'}).eq('status','published');
+  if(nq.cat)q=q.eq('category',nq.cat);
+  if(nq.src=='official')q=q.not('source_name','is',null);else if(nq.src=='page')q=q.is('source_name',null);
+  if(nq.q)q=q.ilike('title',`%${nq.q.replace(/[\\%_]/g,'\\$&')}%`);
+  q=nq.sort=='old'?q.order('published_at',{ascending:true}):q.order('is_featured',{ascending:false}).order('published_at',{ascending:false,nullsFirst:false});
+  const{data,count,error}=await q.range(nq.page*NEWS_PER,nq.page*NEWS_PER+NEWS_PER-1);
+  if(!$('#nl'))return; // ผู้ใช้ออกจากหน้าไปแล้ว
+  if(error){box.innerHTML=`<div class="card bad">โหลดข่าวไม่สำเร็จ: ${esc(error.message)}</div>`;$('#npg').innerHTML='';return}
+  const pages=Math.max(1,Math.ceil((count||0)/NEWS_PER));
+  box.innerHTML=(data||[]).map(n=>`<div class="card news cat-${esc(n.category)}"><a href="#/news/${n.id}" class="nimg">${nImg(n)}</a><div class="nb">
+    <div class="nmeta">${n.is_featured?'<span class="chip pin">📌 ปักหมุด</span>':''}${isNewNews(n)?'<span class="chip new">ใหม่</span>':''}${srcTag(n)}<span class="chip tag cat-${esc(n.category)}">${esc(NCATS[n.category]||NCATS.others)}</span><span class="mut">${fmtDate(nDate(n))}</span></div>
+    <a href="#/news/${n.id}" class="nt"><b>${esc(n.title)}</b></a>
+    <p class="clamp">${esc(n.summary||n.body||'')}</p>
+    <div class="mut links"><a href="#/news/${n.id}">อ่านรายละเอียด</a>${safeUrl(n.source_url)?`<a href="${esc(n.source_url)}" target="_blank" rel="noopener noreferrer">${srcLabel(n)} ↗</a>`:''}${isAdmin()&&!n.source_name?`<a href="#" data-d="${n.id}">ลบ</a>`:''}</div></div></div>`).join('')||'<div class="card mut">ไม่พบข่าว</div>';
+  fixImgs(box);
+  box.querySelectorAll('[data-d]').forEach(a=>a.onclick=async e=>{e.preventDefault();if(confirm('ลบข่าวนี้?')){await sb.from('news').delete().eq('id',a.dataset.d);loadNews()}});
+  $('#npg').innerHTML=pages>1?`<button class="ghost" id="pv" ${nq.page==0?'disabled':''}>← ก่อนหน้า</button><span class="mut">หน้า ${nq.page+1} / ${pages} (${count} ข่าว)</span><button class="ghost" id="nx" ${nq.page+1>=pages?'disabled':''}>ถัดไป →</button>`:`<span class="mut">${count||0} ข่าว</span>`;
+  if(pages>1){$('#pv').onclick=()=>{nq.page--;loadNews();scrollTo({top:0})};$('#nx').onclick=()=>{nq.page++;loadNews();scrollTo({top:0})}}
+}
+async function newsDetail(id){
+  app.innerHTML='<div class="card mut">กำลังโหลด…</div>';
+  const{data:n}=await sb.from('news').select('*').eq('id',id).maybeSingle();
+  if(!n){app.innerHTML='<p><a href="#/news">← กลับหน้าข่าว</a></p><div class="card bad">ไม่พบข่าวนี้ (อาจถูกซ่อนหรือลบแล้ว)</div>';return}
+  const url=safeUrl(n.source_url),scraped=!!n.source_name,sum=n.summary||(scraped?'':n.body||'');
+  app.innerHTML=`<p><a href="#/news">← กลับหน้าข่าว</a></p><article class="card ndet">
+    <div class="nmeta">${n.is_featured?'<span class="chip pin">📌 ปักหมุด</span>':''}${isNewNews(n)?'<span class="chip new">ใหม่</span>':''}${srcTag(n)}<span class="chip tag cat-${esc(n.category)}">${esc(NCATS[n.category]||NCATS.others)}</span><span class="mut">เผยแพร่ ${fmtDate(nDate(n))}</span>${n.status!='published'?`<span class="chip">${esc(n.status)}</span>`:''}</div>
+    <h2 class="ndt">${esc(n.title)}</h2>
+    ${n.original_title&&n.original_title!=n.title?`<div class="mut">หัวข้อต้นฉบับ: ${esc(n.original_title)}</div>`:''}
+    <div class="nhero">${nImg(n)}</div>
+    ${sum?`<div class="nsum">${esc(sum)}</div>`:'<div class="nsum mut">ยังไม่มีสรุปภาษาไทยสำหรับข่าวนี้ กรุณาอ่านรายละเอียดจากประกาศต้นฉบับ</div>'}
+    ${n.content?`<div class="nsum">${esc(n.content)}</div>`:''}
+    ${scraped?`<div class="notice">ℹ️ ${n.ai_generated?'ข่าวนี้สรุปและเรียบเรียงโดย AI จากประกาศต้นฉบับ':'ข่าวนี้สรุปจากแหล่งข่าวต้นทาง'} ข้อมูลอาจคลาดเคลื่อนหรือไม่ครบถ้วน โปรดตรวจสอบรายละเอียดจากประกาศต้นฉบับ</div>`:''}
+    <div class="nsrc">แหล่งที่มา: <b>${esc(n.source_name||(n.fb_post_id?'Facebook':'ทีมงาน'))}</b>${url?` · <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname)}</a>`:''}</div>
+    ${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${n.fb_post_id?'ดูโพสต์บน Facebook':'อ่านประกาศต้นฉบับ'} ↗</a>`:''}
+    <p class="mut disc">${esc(DISCLAIMER)}</p></article>`;
+  fixImgs(app);
+}
+
+// ---------- Battle Logs ----------
+const norm=s=>(s||'').trim().toLowerCase();
+const myName=()=>{try{return localStorage.getItem('myname')||''}catch(e){return ''}};
+const setName=n=>{try{localStorage.setItem('myname',n)}catch(e){}};
+function parseLog(raw){
+  const players=[...new Set([...raw.matchAll(/^(.+?) drew 7 cards for the opening hand/gm)].map(m=>m[1].trim()))];
+  if(players.length<2)[...raw.matchAll(/^Turn # \d+ - (.+?)['’]s Turn/gm)].forEach(m=>{const n=m[1].trim();if(!players.includes(n))players.push(n)});
+  const wins=[...raw.matchAll(/(?:^|\.\s|\n)([^\n.]+?) wins\./g)].map(m=>m[1].trim());
+  const conc=raw.match(/^(.+?) conceded/m);
+  const turns=Math.max(0,...[...raw.matchAll(/Turn # (\d+)/g)].map(m=>+m[1]));
+  return{players:players.slice(0,2),winner:wins.pop()||null,loser:conc?conc[1].trim():null,turns};
+}
+function guessDeck(raw,p){ // เดาชื่อเด็คจากโปเกมอนที่ลง/วิวัฒนาการ แก้ได้ในโหมด Edit logs
+  const w={},e=p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),add=(n,v)=>{n=n.trim();if(n)w[n]=(w[n]||0)+v};
+  for(const m of raw.matchAll(new RegExp('^'+e+' played (.+?) to the (?:Active Spot|Bench)','gm')))add(m[1],1);
+  for(const m of raw.matchAll(new RegExp('^'+e+' evolved .+? to (.+?)\\.?$','gm')))add(m[1],2);
+  return Object.entries(w).sort((a,b)=>b[1]-a[1]).slice(0,2).map(x=>x[0]).join(' / ')||'Unknown';
+}
+const rec=L=>{const w=L.filter(x=>x.result=='win').length,l=L.filter(x=>x.result=='loss').length,t=L.length-w-l;return `${w}-${l}${t?'-'+t:''}`};
+let ltab='day',lmax=30,ledit=false;
+async function logs(){
+  if(need())return;
+  const{data}=await sb.from('battle_logs').select('id,my_deck,opp_deck,result,turns,created_at').order('created_at',{ascending:false}).limit(lmax);
+  const L=data||[];
+  app.innerHTML=`<div class="lh"><h2>Battle Logs</h2><span class="mut">บันทึกแมตช์ PTCG Live ของคุณ</span></div>
+  <div class="card pastebox"><textarea id="raw" placeholder="วาง log จาก PTCG Live ที่นี่"></textarea><button id="add">＋ Add Log</button></div>
+  <div class="mut" style="margin:-4px 0 12px">ชื่อในเกม: <b>${esc(myName())||'ยังไม่ตั้ง (จะถามตอนเพิ่ม log แรก)'}</b> · <a href="#" id="chn">เปลี่ยน</a></div>
+  <div class="tabbar"><div class="pill">${[['day','Day'],['deck','Deck'],['all','All']].map(([k,l])=>`<button data-lt="${k}" class="${k==ltab?'on':''}">${l}</button>`).join('')}</div><button class="ghost" id="ed">${ledit?'✓ Done':'✏️ Edit logs'}</button></div><div id="lg"></div>`;
+  const inp=(l,f)=>ledit?`<input class="mini" data-f="${f}" data-id="${l.id}" value="${esc(l[f])}">`:esc(l[f]);
+  const row=l=>`<div class="lrow ${l.result}"><div><b>${l.result=='win'?'Win':l.result=='loss'?'Loss':'Tie'}</b> vs ${inp(l,'opp_deck')}<div class="mut">${inp(l,'my_deck')} · ${l.turns} turns · ${new Date(l.created_at).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}</div></div>${ledit?`<button class="ghost" data-del="${l.id}">🗑</button>`:''}</div>`;
+  const group=(t,items,open=true,empty='ยังไม่มีแมตช์ที่บันทึก<br>ออกไปเล่นกันเลย!')=>`<div class="grp"><div class="gh"><b>${esc(t)}</b><span><b>${rec(items)}</b> <span class="mut">${items.length} total</span> ▾</span></div><div class="gb" ${open?'':'hidden'}>${items.map(row).join('')||`<p class="mut">${empty}</p>`}</div></div>`;
+  const dk=d=>new Date(d).toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'});
+  let out='';
+  if(ltab=='day'){const g={};g[dk(Date.now())]=[];L.forEach(l=>(g[dk(l.created_at)]??=[]).push(l));
+    out=Object.entries(g).map(([k,v],i)=>group(k,v,true,i==0?'วันนี้ยังไม่มีแมตช์ที่บันทึก<br>ออกไปเล่นกันเลย!':undefined)).join('')}
+  else if(ltab=='deck'){const g={};L.forEach(l=>(g[l.my_deck||'Unknown']??=[]).push(l));
+    out=Object.entries(g).sort((a,b)=>b[1].length-a[1].length).map(([k,v])=>group(`${k} · ${Math.round(v.filter(x=>x.result=='win').length/v.length*100)}%`,v,false)).join('')||'<p class="mut">ยังไม่มีข้อมูล</p>'}
+  else out=group('ทั้งหมด',L);
+  $('#lg').innerHTML=out+(L.length>=lmax?'<div style="text-align:center;margin:16px"><button class="ghost" id="more">โหลด log เก่ากว่านี้</button></div>':'');
+  $('#add').onclick=async()=>{
+    const raw=$('#raw').value.trim();if(!raw)return;const p=parseLog(raw);
+    if(p.players.length<2)return alert('อ่าน log ไม่ได้: ไม่พบรายชื่อผู้เล่น ลองคัดลอก log ทั้งหมดจาก PTCG Live ใหม่');
+    let me=p.players.find(x=>norm(x)==norm(myName()));
+    if(!me){me=confirm(`ใน log มีผู้เล่น:\n1) ${p.players[0]}\n2) ${p.players[1]}\n\nกด OK ถ้าคุณคือ "${p.players[0]}"\nกด Cancel ถ้าคุณคือ "${p.players[1]}"`)?p.players[0]:p.players[1];setName(me)}
+    const opp=p.players.find(x=>x!=me);
+    const result=p.winner?(norm(p.winner)==norm(me)?'win':'loss'):p.loser?(norm(p.loser)==norm(me)?'loss':'win'):'tie';
+    const{error}=await sb.from('battle_logs').insert({my_deck:guessDeck(raw,me),opp_deck:guessDeck(raw,opp),result,turns:p.turns,raw});
+    if(error)return alert(error.message);logs()};
+  $('#chn').onclick=e=>{e.preventDefault();const n=prompt('ชื่อในเกม PTCG Live ของคุณ',myName());if(n!==null){setName(n.trim());logs()}};
+  app.querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{ltab=b.dataset.lt;logs()});
+  $('#ed').onclick=()=>{ledit=!ledit;logs()};
+  if($('#more'))$('#more').onclick=()=>{lmax+=30;logs()};
+  app.querySelectorAll('.gh').forEach(g=>g.onclick=()=>g.nextElementSibling.toggleAttribute('hidden'));
+  app.querySelectorAll('[data-f]').forEach(i=>i.onchange=async()=>{await sb.from('battle_logs').update({[i.dataset.f]:i.value}).eq('id',i.dataset.id)});
+  app.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(confirm('ลบแมตช์นี้?')){await sb.from('battle_logs').delete().eq('id',b.dataset.del);logs()}});
+}
+
+// ---------- Cut Calculator ----------
+const recRounds=n=>n<=8?3:n<=16?4:n<=32?5:n<=64?6:n<=128?7:n<=226?8:n<=409?9:10;
+const binC=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r};
+const fieldDist=(P,R)=>Array.from({length:R+1},(_,w)=>P*binC(R,w)/2**R);
+function pTop(cnt,me,N){let ab=0,eq=0;cnt.forEach((c,w)=>{if(3*w>me)ab+=c;else if(3*w==me)eq+=c});return ab>=N?0:ab+eq+1<=N?1:(N-ab)/(eq+1)}
+function cutTable(P,R,N){let cum=0;return Array.from({length:R+1},(_,i)=>{const w=R-i,c=P*binC(R,w)/2**R,p=Math.max(0,Math.min(1,(N-cum)/c)),r={w,l:R-w,c,p};cum+=c;return r})}
+async function swiss(){
+  app.innerHTML=`<h2>🧮 ตัวช่วยคำนวณ Cut</h2><p class="mut">ใส่จำนวนผู้เล่น จำนวนรอบ และ Cut Top เพื่อดูว่าต้องจบ record เท่าไหร่ถึงจะเข้ารอบ</p>
+  <div class="card"><div class="row two"><label>จำนวนผู้เล่น<input id="c_p" type="number" min="2" value="64"></label><label>จำนวนรอบ <span id="c_rec"></span><input id="c_r" type="number" min="1" value="6"></label><label>Cut Top<input id="c_n" type="number" min="1" value="8"></label></div></div>
+  <div id="c_sum"></div><div class="card" style="overflow:auto" id="c_tb"></div>
+  <div class="card"><b>ตอนนี้ฉันอยู่ที่…</b> <span class="mut">(ไม่บังคับ — ดูว่ายังมีลุ้นไหม)</span><div class="row two"><label>ชนะ<input id="c_w" type="number" min="0" placeholder="0"></label><label>แพ้<input id="c_l" type="number" min="0" placeholder="0"></label><label>เสมอ/ID<input id="c_t" type="number" min="0" placeholder="0"></label></div><div id="c_me"></div></div>
+  <p class="mut">สมมติว่าทุกแมตช์ชนะ 50/50 และจับคู่ Swiss ตามปกติ เป็นค่าประมาณ ผลจริงขึ้นกับจำนวน ID/เสมอ และ tiebreak (OWP)</p>`;
+  let manual=false;const g=i=>+$(i).value||0;
+  const run=()=>{
+    const P=g('#c_p'),R=g('#c_r'),N=g('#c_n');
+    $('#c_rec').textContent=P>1?`(แนะนำ ${recRounds(P)})`:'';
+    if(P<2||R<1||N<1){$('#c_sum').innerHTML=$('#c_tb').innerHTML=$('#c_me').innerHTML='';return}
+    const T=cutTable(P,R,N),safe=T.filter(r=>r.p>=.999).pop(),mid=T.filter(r=>r.p>0&&r.p<.999),out=T.some(r=>r.p==0);
+    $('#c_sum').innerHTML=`<div class="card sum">${N>=P?'Cut มากกว่าหรือเท่ากับจำนวนผู้เล่น — ทุกคนเข้ารอบ':
+      `${P} คน · ${R} รอบ · Cut Top ${N}<br>${safe?`✅ จบ <b>${safe.w}-${safe.l}</b> หรือดีกว่า (${3*safe.w} แต้ม) → ติดแน่นอน`:'⚠️ ไม่มี record ไหนการันตี'}`+
+      mid.map(r=>`<br>⚠️ จบ <b>${r.w}-${r.l}</b> → ติดประมาณ <b>${Math.round(r.p*100)}%</b> (ขึ้นกับ tiebreak)`).join('')+(out?'<br>❌ ต่ำกว่านั้นไม่ติด':'')}</div>`;
+    $('#c_tb').innerHTML=`<table><tr><th>Record</th><th>แต้ม</th><th>คนที่คาดว่าจะจบ</th><th>โอกาสติด Top ${N}</th></tr>${T.map(r=>`<tr class="${r.p>=.999?'ok2':r.p>0?'mid':''}"><td><b>${r.w}-${r.l}</b></td><td>${3*r.w}</td><td>${r.c<10?r.c.toFixed(1):Math.round(r.c)}</td><td>${r.p>=.999?'ติดแน่นอน':r.p>0?'≈ '+Math.round(r.p*100)+'%':'—'}</td></tr>`).join('')}</table>`;
+    const w=g('#c_w'),l=g('#c_l'),t=g('#c_t'),d=w+l+t;
+    if(!d){$('#c_me').innerHTML='';return}
+    if(d>R){$('#c_me').innerHTML='<p class="bad">จำนวนรอบที่เล่นเกินจำนวนรอบทั้งหมด</p>';return}
+    const mk=x=>({games:[{res:x}]}),rounds=[...Array(w).fill(mk('W')),...Array(l).fill(mk('L')),...Array(t).fill(mk('T'))];
+    const o=cutOdds({rounds,players:P,total_rounds:R,cut:N}),need=o.rows.find(r=>r.p>=.5),any=o.rows.find(r=>r.p>0);
+    $('#c_me').innerHTML=`<p style="margin:10px 0 4px">${w}-${l}${t?'-'+t:''} · เหลืออีก ${o.rem} รอบ · โอกาสโดยรวม ≈ <b>${Math.round(o.overall*100)}%</b></p>
+    <p class="mut" style="margin:0 0 8px">${!any?'หมดลุ้นแล้ว':need?`ต้องชนะอีกอย่างน้อย <b>${need.k}</b> รอบ ถึงจะมีโอกาสเกิน 50%`:`ต้องชนะให้หมด ${any.k>0?'อย่างน้อย '+any.k+' รอบ':''} จึงจะมีลุ้น`}</p>
+    ${o.rem?`<table>${o.rows.map(r=>`<tr><td>ชนะอีก ${r.k}/${o.rem} รอบ → จบ ${w+r.k}-${l+o.rem-r.k}${t?'-'+t:''}</td><td><b>${Math.round(r.p*100)}%</b></td></tr>`).join('')}</table>`:''}`;
+  };
+  ['c_p','c_r','c_n','c_w','c_l','c_t'].forEach(id=>$('#'+id).oninput=()=>{if(id=='c_r')manual=true;if(id=='c_p'&&!manual)$('#c_r').value=recRounds(g('#c_p'));run()});
+  run();
+}
+
+// ---------- My Tournaments (tracker) ----------
+const CATS=['League Challenge','League Cup','Regional','International','Special Event','Store / Casual','Other'];
+const FMTS=['Standard','Expanded','Unlimited','Limited','Other'];
+const PLACES=['1st','2nd','Top 4','Top 8','Top 16','Top 32','Top 64','Top 128','Day 2','Other'];
+const MON=['Pikachu','Charizard','Dragapult','Gardevoir','Gholdengo','Raging Bolt','Miraidon','Terapagos','Lugia','Archaludon','Roaring Moon','Regidrago','Snorlax','Palkia','Dialga','Ceruledge','Kyogre','Mewtwo','Mimikyu','Froslass','Greninja','Zoroark','Ogerpon','Alakazam','Blastoise','Slowking','Tinkaton','Ho-Oh','Hydrapple','Rayquaza','Conkeldurr','Charizard / Pidgeot','Other'];
+const opts=(a,v,ph)=>`<option value="">${ph}</option>`+a.map(x=>`<option ${x==v?'selected':''}>${esc(x)}</option>`).join('');
+const fdate=d=>new Date(d+'T00:00').toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'});
+const rres=r=>r.outcome=='Bye'||r.outcome=='No show'?'win':r.outcome=='ID'?'tie':(()=>{const w=r.games.filter(g=>g.res=='W').length,l=r.games.filter(g=>g.res=='L').length;return w>l?'win':l>w?'loss':'tie'})();
+const trec=R=>rec((R||[]).map(r=>({result:rres(r)})));
+function modal(html){const o=document.createElement('div');o.className='ov';o.innerHTML=`<div class="md">${html}</div>`;o.onclick=e=>{if(e.target==o)o.remove()};document.body.appendChild(o);return o}
+async function tnForm(t={}){
+  const{data:D}=await sb.from('decklists').select('id,name');
+  const m=modal(`<h3 style="margin:0">${t.id?'Edit tournament':'Create tournament'}</h3>
+  <input id="f_n" placeholder="Tournament name" value="${esc(t.name)}"><input id="f_d" type="date" value="${t.played_on||new Date().toISOString().slice(0,10)}">
+  <select id="f_c">${opts(CATS,t.category,'Select tournament category')}</select><select id="f_f">${opts(FMTS,t.format,'Select format')}</select>
+  <select id="f_p">${opts(PLACES,t.placement,'Add tournament placement')}</select>
+  <select id="f_k"><option value="">No decklist</option>${(D||[]).map(d=>`<option value="${d.id}" ${d.id==t.decklist_id?'selected':''}>${esc(d.name)}</option>`).join('')}</select>
+  <div class="mut">Swiss (ไม่บังคับ — ใช้คำนวณโอกาสติด Top)</div>
+  <div class="row two"><input id="f_pl" type="number" placeholder="ผู้เล่น" value="${t.players??''}"><input id="f_r" type="number" placeholder="จำนวนรอบ" value="${t.total_rounds??''}"><input id="f_cut" type="number" placeholder="Cut Top" value="${t.cut??''}"></div>
+  <div class="row end"><button class="ghost" id="f_x">Cancel</button><button id="f_s">${t.id?'Save':'Add tournament'}</button></div>`);
+  const v=i=>m.querySelector(i).value,n=i=>v(i)?+v(i):null;
+  m.querySelector('#f_x').onclick=()=>m.remove();
+  m.querySelector('#f_s').onclick=async()=>{
+    const row={name:v('#f_n').trim()||'Untitled',played_on:v('#f_d'),category:v('#f_c')||null,format:v('#f_f')||null,placement:v('#f_p')||null,decklist_id:v('#f_k')||null,players:n('#f_pl'),total_rounds:n('#f_r'),cut:n('#f_cut')};
+    const{error}=await(t.id?sb.from('my_tournaments').update(row).eq('id',t.id):sb.from('my_tournaments').insert(row));
+    if(error)return alert(error.message);m.remove();t.id?tdetail(t.id):tours()};
+}
+let tcat='',tfmt='';
+async function tours(id){
+  if(id)return tdetail(id);
+  if(need())return;
+  const{data}=await sb.from('my_tournaments').select('id,name,played_on,category,format,placement,rounds').order('played_on',{ascending:false});
+  const L=(data||[]).filter(t=>(!tcat||t.category==tcat)&&(!tfmt||t.format==tfmt));
+  app.innerHTML=`<div class="lh"><h2>Tournaments</h2><span class="mut">บันทึกทัวร์ รอบ และแมตช์อัพของคุณ</span></div><button class="wide" id="nt">＋ New Tournament</button>
+  <div class="row two"><select id="fc">${opts(CATS,tcat,'All Categories')}</select><select id="ff">${opts(FMTS,tfmt,'All Formats')}</select></div>
+  ${L.map(t=>`<a href="#/tours/${t.id}" class="trow"><span class="ic">${t.category?'🏆':'❔'}</span><div><b>${esc(t.name)}</b><div class="mut">${fdate(t.played_on)}${t.placement?' · '+esc(t.placement):''}</div></div><b>${trec(t.rounds)}</b></a>`).join('')||'<p class="mut">ยังไม่มีทัวร์ — กด New Tournament เพื่อเริ่มต้น เพิ่มทัวร์ย้อนหลังได้ด้วย</p>'}`;
+  $('#nt').onclick=()=>tnForm();
+  $('#fc').onchange=e=>{tcat=e.target.value;tours()};$('#ff').onchange=e=>{tfmt=e.target.value;tours()};
+}
+function cutOdds(t){ // คิดแบบเฉลี่ย: ผู้เล่นคนอื่นชนะ 50/50 ทุกรอบ
+  const R=t.rounds||[],rem=Math.max(0,t.total_rounds-R.length),pts=R.reduce((s,r)=>s+{win:3,tie:1,loss:0}[rres(r)],0),cnt=fieldDist(t.players-1,t.total_rounds);
+  const rows=Array.from({length:rem+1},(_,k)=>({k,p:pTop(cnt,pts+3*k,t.cut)}));
+  return{rows,overall:rows.reduce((a,r)=>a+binC(rem,r.k)/2**rem*r.p,0),rem,pts};
+}
+async function tdetail(id){
+  if(need())return;
+  const{data:t}=await sb.from('my_tournaments').select('*').eq('id',id).single();
+  if(!t){app.textContent='ไม่พบทัวร์นาเมนต์';return}
+  const R=t.rounds||[],save=async()=>{await sb.from('my_tournaments').update({rounds:R}).eq('id',id);tdetail(id)};
+  app.innerHTML=`<a href="#/tours">← กลับ</a><div class="tbar"><button class="ic" id="e1" title="แก้ไข">✏️</button><button class="ic" id="e2" title="โน้ต">📋</button><button class="ic" id="e3" title="โอกาสติด Top">✨</button><button class="ic" id="e4" title="ลบ">🗑</button></div>
+  <div class="lh"><div><h2 style="margin:0">${esc(t.name)}</h2><div class="mut">${fdate(t.played_on)}${[t.category,t.format,t.placement].filter(Boolean).map(x=>' · '+esc(x)).join('')}</div></div>
+  <div style="text-align:right"><div class="big">${trec(R)}</div><button class="soft" id="ad">${t.my_deck?esc(t.my_deck):'Add deck'}</button></div></div>
+  ${t.notes?`<div class="card mut" style="white-space:pre-wrap">${esc(t.notes)}</div>`:''}
+  <table class="rt"><tr><th>Round</th><th>Deck</th><th>Result</th><th></th></tr>${R.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.opp)||'—'}</td><td><span class="chip ${rres(r)}">${esc(r.outcome||r.games.map(g=>g.res+(g.first?' ('+g.first+')':'')).join(' · '))}</span></td><td><button class="ic" data-rd="${i}">✕</button></td></tr>`).join('')}</table>
+  <div id="rf"><button class="wide soft" id="ar">＋ Add round</button></div>
+  <datalist id="mon">${MON.map(x=>`<option value="${x}">`).join('')}</datalist>`;
+  $('#e1').onclick=()=>tnForm(t);
+  $('#e2').onclick=()=>{const m=modal(`<h3 style="margin:0">Notes</h3><textarea id="nn" style="min-height:140px">${esc(t.notes)}</textarea><div class="row end"><button class="ghost" id="x">Cancel</button><button id="s">Save</button></div>`);
+    m.querySelector('#x').onclick=()=>m.remove();m.querySelector('#s').onclick=async()=>{await sb.from('my_tournaments').update({notes:m.querySelector('#nn').value}).eq('id',id);m.remove();tdetail(id)}};
+  $('#e3').onclick=()=>{if(!(t.players>1&&t.total_rounds&&t.cut))return alert('ตั้งค่าจำนวนผู้เล่น / จำนวนรอบ / Cut Top ที่ปุ่มแก้ไข (✏️) ก่อน');
+    const o=cutOdds(t);modal(`<h3 style="margin:0">โอกาสติด Top ${t.cut}</h3><p class="mut" style="margin:0">ตอนนี้ ${trec(R)} (${o.pts} แต้ม) เหลืออีก ${o.rem} รอบ · ผู้เล่น ${t.players} คน</p>
+    <table>${o.rows.map(r=>`<tr><td>ชนะอีก ${r.k}/${o.rem} รอบ</td><td><b>${Math.round(r.p*100)}%</b></td></tr>`).join('')}</table>
+    <p style="margin:0">โดยรวม ≈ <b>${Math.round(o.overall*100)}%</b> (ถ้าทุกรอบที่เหลือชนะ 50/50)</p><p class="mut" style="margin:0">เป็นค่าประมาณ: สมมติผู้เล่นคนอื่นชนะ 50/50 ทุกรอบ ไม่คิด tiebreak และการจับคู่จริง</p>`)};
+  $('#e4').onclick=async()=>{if(confirm('ลบทัวร์นี้?')){await sb.from('my_tournaments').delete().eq('id',id);location.hash='#/tours'}};
+  $('#ad').onclick=async()=>{const d=prompt('ชื่อเด็คที่คุณใช้ในทัวร์นี้ (เช่น Dragapult ex)',t.my_deck||'');if(d!==null){await sb.from('my_tournaments').update({my_deck:d.trim()||null}).eq('id',id);tdetail(id)}};
+  app.querySelectorAll('[data-rd]').forEach(b=>b.onclick=()=>{if(confirm('ลบรอบนี้?')){R.splice(+b.dataset.rd,1);save()}});
+  $('#ar').onclick=()=>{
+    let games=[{res:'',first:''}],outcome='',opp=['',''];
+    const sync=()=>{if($('#o1'))opp=[$('#o1').value,$('#o2').value]};
+    const draw=()=>{$('#rf').innerHTML=`<div class="card"><b>Round ${R.length+1}</b><div class="mut">Opponent's deck</div>
+      <div class="row two"><input list="mon" id="o1" placeholder="Select pokemon…" value="${esc(opp[0])}"><input list="mon" id="o2" placeholder="Select pokemon…" value="${esc(opp[1])}"></div>
+      ${outcome?'':games.map((g,i)=>`<div class="gm"><span>Game ${i+1}</span>${['W','L','T'].map(x=>`<button class="ch ${g.res==x?'on':''}" data-g="${i}" data-r="${x}">${x}</button>`).join('')}<span class="sp"></span>${['1st','2nd'].map(x=>`<button class="ch ${g.first==x?'on':''}" data-g="${i}" data-f="${x}">${x}</button>`).join('')}</div>`).join('')}
+      ${!outcome&&games.length<3?'<a href="#" id="mg">+ Game</a>':''}
+      <div class="mut" style="margin-top:10px">Other outcome</div><div class="row">${[['ID','🤝'],['No show','👻'],['Bye','✋']].map(([x,e])=>`<button class="ch ${outcome==x?'on':''}" data-o="${x}">${e} ${x}</button>`).join('')}</div>
+      <div class="row"><button id="rs" style="flex:1">Add round</button><button class="ghost" id="rc" style="flex:1">Cancel</button></div></div>`;
+      $('#rf').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{sync();const g=games[b.dataset.g];if(b.dataset.r)g.res=b.dataset.r;else g.first=g.first==b.dataset.f?'':b.dataset.f;draw()});
+      $('#rf').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{sync();outcome=outcome==b.dataset.o?'':b.dataset.o;draw()});
+      if($('#mg'))$('#mg').onclick=e=>{e.preventDefault();sync();games.push({res:'',first:''});draw()};
+      $('#rc').onclick=()=>tdetail(id);
+      $('#rs').onclick=()=>{sync();const o=opp.map(x=>x.trim()).filter(Boolean).join(' / ');
+        if(!outcome&&!games[0].res)return alert('เลือกผลเกมที่ 1 (W / L / T) หรือ Other outcome');
+        if(!outcome&&!o)return alert('ใส่เด็คของคู่แข่งอย่างน้อย 1 ตัว');
+        R.push({opp:o,games:outcome?[]:games.filter(g=>g.res),outcome:outcome||null});save()};
+    };draw()};
+}
+
+// ---------- Stats (Matchups) ----------
+let msrc={logs:true,tn:true},mfmt='',mdeck='';
+async function stats(){
+  if(need())return;
+  const[{data:L},{data:T}]=await Promise.all([sb.from('battle_logs').select('my_deck,opp_deck,result'),sb.from('my_tournaments').select('format,my_deck,rounds')]);
+  let E=[];
+  if(msrc.logs&&!mfmt)(L||[]).forEach(l=>E.push({my:l.my_deck||'',opp:l.opp_deck||'Unknown',res:l.result}));
+  if(msrc.tn)(T||[]).filter(t=>!mfmt||t.format==mfmt).forEach(t=>(t.rounds||[]).forEach(r=>{if(r.opp)E.push({my:t.my_deck||'',opp:r.opp,res:rres(r)})}));
+  const decks=[...new Set([...(L||[]).map(l=>l.my_deck),...(T||[]).map(t=>t.my_deck)].filter(Boolean))];
+  if(mdeck)E=E.filter(e=>e.my==mdeck);
+  const g={};E.forEach(e=>(g[e.opp]??=[]).push(e));
+  const rows=Object.entries(g).sort((a,b)=>b[1].length-a[1].length);
+  app.innerHTML=`<h2>Stats</h2><div class="lh"><h3 style="margin:0">Matchups</h3><div class="row"><button class="ch ${msrc.logs?'on':''}" id="s1">Logs</button><button class="ch ${msrc.tn?'on':''}" id="s2">Tournaments</button><select id="sf">${opts(FMTS,mfmt,'All formats')}</select><select id="sd">${opts(decks,mdeck,'All decks')}</select></div></div>
+  ${rows.length?`<div class="card" style="overflow:auto"><table><tr><th>เจอเด็ค</th><th>W-L-T</th><th>Win %</th><th>เกม</th></tr>${rows.map(([k,v])=>`<tr><td>${esc(k)}</td><td>${rec(v.map(x=>({result:x.res})))}</td><td>${Math.round(v.filter(x=>x.res=='win').length/v.length*100)}%</td><td>${v.length}</td></tr>`).join('')}</table></div>`:'<p class="mut">No matchup data for this filter.</p>'}
+  <p class="mut">Format ใช้กรองเฉพาะข้อมูลจากทัวร์ (Battle Logs ไม่มี format จึงถูกซ่อนเมื่อเลือก format)</p>`;
+  $('#s1').onclick=()=>{msrc.logs=!msrc.logs;stats()};$('#s2').onclick=()=>{msrc.tn=!msrc.tn;stats()};
+  $('#sf').onchange=e=>{mfmt=e.target.value;stats()};$('#sd').onchange=e=>{mdeck=e.target.value;stats()};
+}
+
+// ---------- Decklists / Cards: ดู decks.js ----------
+
+// ---------- Admin: จัดการข่าว + สถานะ Scraper ----------
+let anf={status:'',cat:''};
+const runBadge=r=>`<span class="dot ${esc(r.status)}"></span>${{success:'สำเร็จ',partial:'สำเร็จบางส่วน',error:'ล้มเหลว',running:'กำลังทำงาน'}[r.status]||esc(r.status)}`;
+const fmtDT=s=>s?new Date(s).toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'}):'-';
+async function adminNews(box){
+  const[{data:runs},{data:st}]=await Promise.all([sb.from('scraper_runs').select('*').order('started_at',{ascending:false}).limit(5),sb.from('scraper_settings').select('key,value')]);
+  const S=Object.fromEntries((st||[]).map(r=>[r.key,r.value])),last=(runs||[])[0],lastOk=(runs||[]).find(r=>r.status=='success'||r.status=='partial');
+  const stale=lastOk&&Date.now()-new Date(lastOk.started_at)>3*3600e3;
+  box.innerHTML=`<div class="card"><b>สถานะ Scraper</b>
+    <div class="runbox" style="margin:8px 0">${last?`<span>${runBadge(last)}</span><span class="mut">รอบล่าสุด ${fmtDT(last.started_at)} (${esc(last.trigger||'-')})</span>`:'<span class="mut">ยังไม่เคยทำงาน — การซิงก์อัตโนมัติปิดไว้เป็นค่าเริ่มต้น ใช้การเพิ่มข่าวด้วยตนเอง หรือเปิดเมื่อยืนยันสิทธิ์แหล่งข้อมูลแล้ว</span>'}</div>
+    ${last?`<div class="mut">พบ ${last.found??0} · เพิ่มใหม่ ${last.inserted??0} · สรุป AI ${last.summarized??0} · ผิดพลาด ${last.failed??0}</div>`:''}
+    ${lastOk?`<div class="mut">ตรวจสำเร็จล่าสุด: ${fmtDT(lastOk.started_at)}${stale?' <b class="bad">⚠ นานเกิน 3 ชั่วโมง ตรวจสอบ GitHub Actions</b>':''}</div>`:''}
+    ${last&&last.error?`<div class="bad" style="margin-top:6px">ข้อผิดพลาด: ${esc(last.error)}</div>`:''}
+    ${last&&last.details&&last.details.problems&&last.details.problems.length?`<details><summary class="mut">รายละเอียดปัญหา (${last.details.problems.length})</summary><pre class="mut">${esc(last.details.problems.join('\n'))}</pre></details>`:''}
+    ${(runs||[]).length>1?`<details><summary class="mut">ประวัติ 5 รอบล่าสุด</summary><table>${runs.map(r=>`<tr><td>${runBadge(r)}</td><td class="mut">${fmtDT(r.started_at)}</td><td class="mut">+${r.inserted??0}</td></tr>`).join('')}</table></details>`:''}
+    <hr style="border:0;border-top:1px solid var(--bd);margin:12px 0">
+    <div class="row"><button id="sn">🔄 สั่งตรวจสอบข่าวใหม่</button><span class="mut" id="snm">${typeof S.manual_requested_at=='string'?'มีคำขอรออยู่ (ส่งเมื่อ '+fmtDT(S.manual_requested_at)+')':''}</span></div>
+    <div class="row"><label>ช่วงตรวจสอบ (นาที, 30–1440)<input id="si" type="number" min="30" max="1440" step="5" value="${Number(S.interval_minutes)||30}"></label>
+      <label style="justify-content:flex-end"><span><input type="checkbox" id="sa" ${S.ai_enabled!==false?'checked':''}> เปิด AI สรุปข่าว</span></label>
+      <label style="justify-content:flex-end"><span><input type="checkbox" id="sp" ${S.auto_publish!==false?'checked':''}> เผยแพร่ข่าวที่ดึงมาอัตโนมัติ</span></label>
+      <button id="ss" class="ghost">บันทึกการตั้งค่า</button></div>
+    <div class="mut">Workflow ตรวจสอบตามกำหนด แต่ NEWS_SYNC_ENABLED ปิดไว้เป็นค่าเริ่มต้น — ใช้การเพิ่มข่าวด้วยตนเองจนกว่าจะยืนยันสิทธิ์แหล่งข้อมูล (หรือกด Run workflow ใน GitHub เพื่อรันทันที) · การเปิด AI ต้องตั้ง AI_ENABLED และ AI_API_KEY ฝั่ง Scraper ด้วย</div></div>
+    <div class="row"><select id="afs"><option value="">ทุกสถานะ</option>${['published','pending','hidden'].map(x=>`<option ${anf.status==x?'selected':''}>${x}</option>`).join('')}</select><select id="afc">${catOpts(anf.cat,1)}</select><a href="#/news" class="mut" style="align-self:center">+ โพสต์ข่าวเองที่หน้าข่าวสาร</a></div><div id="anl"></div>`;
+  $('#sn').onclick=async()=>{const{error}=await sb.from('scraper_settings').upsert({key:'manual_requested_at',value:new Date().toISOString(),updated_at:new Date().toISOString()});$('#snm').textContent=error?error.message:'ส่งคำขอแล้ว — จะทำงานในรอบถัดไป'};
+  $('#ss').onclick=async()=>{const iv=Math.round(Number($('#si').value));if(!(iv>=30&&iv<=1440)){alert('ช่วงตรวจสอบต้อง 30–1440 นาที');return}
+    const now=new Date().toISOString(),{error}=await sb.from('scraper_settings').upsert([{key:'interval_minutes',value:iv,updated_at:now},{key:'ai_enabled',value:$('#sa').checked,updated_at:now},{key:'auto_publish',value:$('#sp').checked,updated_at:now}]);
+    $('#snm').textContent=error?error.message:'บันทึกแล้ว'};
+  $('#afs').onchange=e=>{anf.status=e.target.value;adminNews(box)};$('#afc').onchange=e=>{anf.cat=e.target.value;adminNews(box)};
+  let q=sb.from('news').select('id,title,summary,category,status,is_featured,source_name,source_url,published_at,created_at').order('published_at',{ascending:false,nullsFirst:false}).limit(100);
+  if(anf.status)q=q.eq('status',anf.status);if(anf.cat)q=q.eq('category',anf.cat);
+  const{data}=await q,rows=data||[];
+  $('#anl').innerHTML=`<div class="card" style="overflow:auto"><table>${rows.map(n=>`<tr><td>${n.is_featured?'📌 ':''}<b>${esc(n.title)}</b><div class="mut">${esc(NCATS[n.category]||'')} · ${n.source_name?'ดึงอัตโนมัติ':'โพสต์เอง/FB'}${n.summary?'':' · <span class="bad">ไม่มีสรุป</span>'}</div></td>
+    <td><span class="chip">${esc(n.status)}</span></td><td class="mut">${fmtDate(nDate(n))}</td>
+    <td style="white-space:nowrap"><button class="ic" title="แก้ไข" data-e="${n.id}">✏️</button><button class="ic" title="${n.status=='published'?'ซ่อน':'เผยแพร่'}" data-v="${n.id}" data-s="${n.status=='published'?'hidden':'published'}">${n.status=='published'?'🙈':'👁️'}</button><button class="ic" title="ปักหมุด" data-p="${n.id}" data-f="${n.is_featured?0:1}">${n.is_featured?'📍':'📌'}</button><button class="ic" title="ลบ" data-x="${n.id}">🗑️</button></td></tr>`).join('')||'<tr><td class="mut">ไม่มีข่าว</td></tr>'}</table></div>`;
+  const byId=id=>rows.find(r=>r.id==id),upd=async(id,patch)=>{const{error}=await sb.from('news').update(patch).eq('id',id);if(error)alert(error.message);adminNews(box)};
+  box.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>upd(b.dataset.v,{status:b.dataset.s}));
+  box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>upd(b.dataset.p,{is_featured:b.dataset.f=='1'}));
+  box.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const n=byId(b.dataset.x);if(confirm(`ลบข่าว "${n.title}"?`+(n.source_name?'\n(ข่าวที่ดึงอัตโนมัติจะไม่ถูกดึงกลับมาอีก)':''))){const{error}=await sb.from('news').delete().eq('id',n.id);if(error)alert(error.message);adminNews(box)}});
+  box.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{const n=byId(b.dataset.e);
+    const m=document.createElement('div');m.className='ov';
+    m.innerHTML=`<div class="md"><b>แก้ไขข่าว</b><label>หัวข้อ<input id="et" value="${esc(n.title)}"></label><label>หมวดหมู่<select id="ec">${catOpts(n.category)}</select></label><label>สรุป<textarea id="es" style="min-height:160px">${esc(n.summary||'')}</textarea></label><div class="row end"><button class="soft" id="ex">ยกเลิก</button><button id="eo">บันทึก</button></div></div>`;
+    document.body.appendChild(m);m.querySelector('#ex').onclick=()=>m.remove();
+    m.querySelector('#eo').onclick=async()=>{const t=m.querySelector('#et').value.trim();if(!t)return;m.remove();await upd(n.id,{title:t,category:m.querySelector('#ec').value,summary:m.querySelector('#es').value.trim()||null})}});
+}
+
+// ---------- Admin ----------
+let atab='overview';
+async function admin(){
+  if(need())return;
+  if(!isAdmin()){app.innerHTML='<div class="card bad">หน้านี้สำหรับผู้ดูแลระบบเท่านั้น</div>';return}
+  const tabs=[['overview','ภาพรวม'],['users','ผู้ใช้'],['news','ข่าว'],['tours','ทัวร์'],['decks','เด็ค']];
+  app.innerHTML=`<div class="admbar">🛡️ Admin Panel</div><div class="row">${tabs.map(([k,l])=>`<button data-t="${k}" class="${k==atab?'':'ghost'}">${l}</button>`).join('')}</div><div id="ab"></div>`;
+  app.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{atab=b.dataset.t;admin()});
+  const box=$('#ab');
+  if(atab=='overview'){const{data:s}=await sb.rpc('admin_stats');
+    box.innerHTML=`<div class="grid">${[['ผู้ใช้','users'],['Battle Logs','logs'],['ทัวร์','tournaments'],['เด็ค','decks'],['การ์ด','cards'],['ข่าว','news']].map(([l,k])=>`<div class="card stat"><b>${s?.[k]??0}</b><span class="mut">${l}</span></div>`).join('')}</div>`}
+  else if(atab=='users'){const{data}=await sb.from('profiles').select('*').order('created_at');
+    box.innerHTML=`<div class="card" style="overflow:auto"><table><tr><th>Email</th><th>Role</th><th>สมัครเมื่อ</th><th></th></tr>${(data||[]).map(u=>`<tr><td>${esc(u.email)}</td><td>${esc(u.role)}</td><td>${new Date(u.created_at).toLocaleDateString()}</td><td>${u.id==user.id?'(คุณ)':`<button data-u="${u.id}" data-nr="${u.role=='admin'?'user':'admin'}">${u.role=='admin'?'ถอดสิทธิ์':'ตั้งเป็น admin'}</button>`}</td></tr>`).join('')}</table></div>`;
+    box.querySelectorAll('[data-u]').forEach(b=>b.onclick=async()=>{await sb.from('profiles').update({role:b.dataset.nr}).eq('id',b.dataset.u);admin()})}
+  else if(atab=='news')await adminNews(box);
+  else{const[tb,col]={news:['news','title'],tours:['tournaments','name'],decks:['decklists','name']}[atab];
+    let tcg='';if(atab=='decks'){const{data:s}=await sb.from('scraper_settings').select('value').eq('key','tcg_last_run').maybeSingle(),v=s?.value;
+      tcg=`<div class="card"><b>Scraper การ์ด/เด็ค (sync-tcg)</b><div class="mut">${v?`ทำงานล่าสุด ${fmtDT(v.at)} · การ์ดใหม่ ${v.cards?.inserted??'-'} · เด็คใหม่ ${v.decks?.inserted??'-'}`:'ยังไม่เคยทำงาน — ระบบซิงก์ถูกปิดไว้เป็นค่าเริ่มต้น ต้องตรวจสอบสิทธิ์แหล่งข้อมูลก่อนเปิด CARD_SYNC_ENABLED / DECK_SYNC_ENABLED'}</div>${v?.problems?.length?`<details><summary class="mut">ปัญหา (${v.problems.length})</summary><pre class="mut">${esc(v.problems.join('\n'))}</pre></details>`:''}</div>`}
+    const{data}=await sb.from(tb).select(`id,${col},created_at`).order('created_at',{ascending:false});
+    box.innerHTML=tcg+(atab=='news'?'<p><a href="#/news">+ โพสต์ข่าวใหม่ที่หน้าข่าวสาร</a></p>':'')+`<div class="card"><table>${(data||[]).map(r=>`<tr><td>${esc(r[col])}</td><td class="mut">${new Date(r.created_at).toLocaleDateString()}</td><td><button data-x="${r.id}">ลบ</button></td></tr>`).join('')||'<tr><td class="mut">ไม่มีข้อมูล</td></tr>'}</table></div>`;
+    box.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{if(confirm('ลบรายการนี้?')){await sb.from(tb).delete().eq('id',b.dataset.x);admin()}})}
+}
+
+
+// ---------- About / Legal / Contact ----------
+function legalPage(kind){
+  const pages={
+    about:{title:'เกี่ยวกับจี่สมอง',body:`<p>จี่สมอง (G-Brain) เป็นเว็บไซต์ชุมชนเกมอิสระที่สร้างขึ้นโดยแฟนเกม เพื่อแบ่งปันข่าวสาร ความรู้ เครื่องมือ และประสบการณ์การเล่นเกมการ์ดและเกมอื่น ๆ</p><p>เว็บไซต์นี้เป็นโครงการอิสระ ไม่ใช่เว็บไซต์ทางการของผู้ผลิตเกมหรือเจ้าของเครื่องหมายการค้าใด ๆ</p>`},
+    disclaimer:{title:'Disclaimer',body:`<p>G-Brain เป็นเว็บไซต์ชุมชนแฟนเมดที่ไม่เป็นทางการ ไม่ได้มีความเกี่ยวข้อง ได้รับการรับรอง สนับสนุน หรือดำเนินงานร่วมกับ Nintendo, The Pokémon Company, Creatures Inc., GAME FREAK inc. หรือบริษัทในเครือ</p><p>ชื่อเกม ชื่อตัวละคร เครื่องหมายการค้า และทรัพย์สินทางปัญญาของบุคคลภายนอกเป็นของเจ้าของสิทธิ์แต่ละราย การกล่าวถึงชื่อดังกล่าวมีวัตถุประสงค์เพื่อระบุเนื้อหาและให้ข้อมูลเกี่ยวกับชุมชนผู้เล่นเท่านั้น</p><p>การแสดง Disclaimer ไม่ได้ให้สิทธิ์ G-Brain ในการใช้ ทำซ้ำ ดัดแปลง หรือเผยแพร่ทรัพย์สินทางปัญญาของบุคคลอื่น</p><p>ข้อมูลข่าวสารและข้อมูลชุมชนอาจมีการเปลี่ยนแปลง โปรดตรวจสอบรายละเอียดจากแหล่งข้อมูลต้นทาง</p>`},
+    copyright:{title:'Copyright Policy',body:`<h3>การเคารพสิทธิ์ในทรัพย์สินทางปัญญา</h3><p>G-Brain เคารพสิทธิ์ของเจ้าของผลงานและเครื่องหมายการค้าทุกฝ่าย เว็บไซต์มุ่งใช้เนื้อหาที่สร้างขึ้นเอง เนื้อหาที่ได้รับอนุญาต หรือข้อมูลที่สามารถใช้ได้ตามเงื่อนไขที่เกี่ยวข้อง</p><h3>การแจ้งเนื้อหาที่อาจละเมิดสิทธิ์</h3><p>เจ้าของสิทธิ์หรือตัวแทนสามารถแจ้ง URL ของเนื้อหา รายละเอียดผลงาน หลักฐานแสดงสิทธิ์ และข้อมูลสำหรับติดต่อกลับผ่านช่องทางติดต่อผู้ดูแลเว็บไซต์</p><h3>การตรวจสอบและดำเนินการ</h3><p>ผู้ดูแลจะตรวจสอบคำร้องตามข้อมูลที่ได้รับ และอาจจำกัดการเข้าถึงหรือถอดเนื้อหาที่ถูกร้องเรียนระหว่างตรวจสอบตามความเหมาะสม</p><p>การส่งคำร้องควรให้ข้อมูลที่ถูกต้องและครบถ้วน การแจ้งลบไม่ได้เป็นการตัดสินข้อพิพาททางกฎหมาย</p><h3>เนื้อหาจากสมาชิก</h3><p>สมาชิกต้องส่งเฉพาะเนื้อหาที่ตนมีสิทธิ์ใช้งานหรือได้รับอนุญาตให้เผยแพร่ ห้ามอัปโหลดภาพการ์ด ภาพตัวละคร หรือผลงานของบุคคลอื่นโดยไม่มีสิทธิ์</p>`},
+    contact:{title:'ติดต่อและแจ้งเรื่องลิขสิทธิ์',body:`<p>หากพบเนื้อหาที่อาจละเมิดลิขสิทธิ์หรือเครื่องหมายการค้า โปรดติดต่อผู้ดูแลเว็บไซต์ผ่านช่องทางที่ใช้ติดต่อทีมงานจี่สมอง</p><p>กรุณาระบุ URL ของหน้าเว็บที่เกี่ยวข้อง ชื่อผลงานหรือเครื่องหมายการค้า รายละเอียดสิทธิ์ที่ถือครอง และข้อมูลติดต่อกลับ</p><p class="mut">หมายเหตุ: ยังไม่มีการตั้งค่าอีเมลรับเรื่องใน Source Code ชุดนี้ กรุณาเพิ่มอีเมลหรือช่องทางติดต่อที่ผู้ดูแลควบคุมได้ก่อนเปิดใช้งานจริง</p>`}
+  };
+  const p=pages[kind]||pages.about;
+  app.innerHTML=`<a href="#/news">← กลับหน้าหลัก</a><article class="card legal-page"><h2>${p.title}</h2>${p.body}<p class="mut">${esc(DISCLAIMER)}</p></article>`;
+}
+
+// ---------- Router ----------
+const pages={news,logs,tours,decks,cards:cardsPg,login,admin,swiss,stats,about:()=>legalPage('about'),disclaimer:()=>legalPage('disclaimer'),copyright:()=>legalPage('copyright'),contact:()=>legalPage('contact')};
+async function go(){document.querySelectorAll('.ov').forEach(o=>o.remove());const[p,id]=(location.hash.slice(2)||'news').split('/');$('main').classList.toggle('wide',(p=='decks'&&!id)||p=='cards');$('#banner').style.display=(p=='news'||!pages[p])?'block':'none';document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#/'+(pages[p]?p:'news')));await(pages[p]||news)(id)}
+sb.auth.onAuthStateChange((_,s)=>{user=s?.user||null;
+  setTimeout(async()=>{role='user';
+    if(user){const{data}=await sb.from('profiles').select('role').eq('id',user.id).maybeSingle();role=data?.role||'user'}
+    $('#auth').textContent=user?'👤 บัญชีของฉัน':'🔑 Log In';
+    document.querySelectorAll('.adm').forEach(e=>e.style.display=isAdmin()?'block':'none');go()},0)});
+addEventListener('hashchange',go);
+</script></body></html>

@@ -4,7 +4,7 @@
 <title>จี่สมอง</title>
 <link rel="icon" href="assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="decks.css">
+<link rel="stylesheet" href="community.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{--bg:#f6f2ff;--card:#fff;--tx:#1e1033;--mut:#7a6a99;--bd:#e4daf7;--pri:#7c3aed;--pri2:#5b21b6;--win:#d1fae5;--loss:#fee2e2;--nav:#fff}
@@ -57,7 +57,7 @@ label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut)
 .ph{width:130px;height:130px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px;background:linear-gradient(135deg,var(--bd),var(--card));border:1px dashed var(--bd)}
 .nimg{flex-shrink:0;display:block}.nmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:2px}.chip.new{background:#ef4444;color:#fff;font-weight:600}.chip.pin{background:#f59e0b;color:#fff}
 .nt{color:var(--tx);text-decoration:none;font-size:16px}.nt:hover{text-decoration:underline}.nctl{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.nctl input{flex:1;min-width:180px}
-.npg{display:flex;justify-content:center;align-items:center;gap:12px;margin:16px 0;flex-wrap:wrap}button:disabled{opacity:.4;cursor:default}.disc{font-size:12px;margin-top:20px}.site-footer{border-top:1px solid var(--bd);margin-top:34px;padding:20px 4px 12px;color:var(--mut);font-size:13px}.site-footer p{margin:5px 0}.legal-links{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0}.gbrain-ph{flex-direction:column;gap:0;color:var(--pri2);font-weight:700;background:linear-gradient(135deg,#ede4ff,#faf7ff)}.gbrain-ph span{font-size:34px;line-height:1}.gbrain-ph small{font-size:9px;letter-spacing:2px}
+.npg{display:flex;justify-content:center;align-items:center;gap:12px;margin:16px 0;flex-wrap:wrap}button:disabled{opacity:.4;cursor:default}.disc{font-size:12px;margin-top:20px}
 .ndt{margin:10px 0 6px}.nhero img,.nhero .ph{width:100%;max-height:340px;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:12px 0}.nhero .ph{height:200px;font-size:64px}
 .nsum{white-space:pre-wrap;line-height:1.8;margin:12px 0}.notice{background:var(--bd);border-radius:10px;padding:10px 14px;font-size:13px;margin:12px 0}.nsrc{margin:12px 0;font-size:14px}
 a.btn{display:inline-block;background:var(--pri);color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:600}a.btn:hover{background:var(--pri2)}
@@ -70,33 +70,25 @@ a.btn{display:inline-block;background:var(--pri);color:#fff;padding:10px 18px;bo
 .chip.src{font-size:12px;border:1px solid var(--bd);background:var(--card)}.chip.src.pg{background:#1877f2;color:#fff;border-color:#1877f2}.chip.src.off{background:var(--card);color:var(--tx)}#nsrc{display:flex;flex-wrap:wrap;margin:8px 0}
 </style></head><body>
 <nav><div class="brand"><img src="assets/mascot.webp" alt=""><b id="site"></b></div>
-<div class="sec">ทั่วไป</div><a href="#/news">📰 ข่าวสาร</a><a href="#/tours">🏆 Tournaments</a><a href="#/swiss">🧮 คำนวณ Cut</a><a href="#/decks">🃏 เด็คสาธารณะ</a><a href="#/cards">🎴 การ์ด</a>
+<div class="sec">คอมมูนิตี้</div><a href="#/news">📰 ข่าวสารจากเพจ</a><a href="#/feed">💬 ฟีดชุมชน</a><a href="#/chat">🗨️ ห้องแชท</a>
+<div class="sec">เครื่องมือ</div><a href="#/tours">🏆 Tournaments</a><a href="#/swiss">🧮 คำนวณ Cut</a>
 <div class="sec">ของฉัน</div><a href="#/logs">⚔️ Battle Logs</a><a href="#/stats">📊 Stats</a><a href="#/login" id="auth">Log In</a>
 <div class="sec adm">ผู้ดูแลระบบ</div><a href="#/admin" class="adm">🛡️ Admin Panel</a></nav>
-<main><img id="banner" class="banner" src="assets/banner.webp" alt="จี่สมอง"><div id="app"></div>
-<footer class="site-footer"><div><b>จี่สมอง · G-Brain</b><p>Independent, unofficial fan-made gaming community.</p></div>
-<div class="legal-links" aria-label="ข้อมูลเว็บไซต์"><a href="#/about">เกี่ยวกับเรา</a><a href="#/disclaimer">Disclaimer</a><a href="#/copyright">Copyright Policy</a><a href="#/contact">ติดต่อ / แจ้งสิทธิ์</a></div>
-<p class="mut">G-Brain ไม่ได้เป็นเว็บไซต์ทางการหรือมีความเกี่ยวข้องกับเจ้าของเครื่องหมายการค้าของเกมที่กล่าวถึง</p></footer></main>
+<main><img id="banner" class="banner" src="assets/banner.webp" alt="จี่สมอง"><div id="app"></div></main>
 <script src="config.js"></script>
-<script src="decks.js"></script>
+<script src="community.js"></script>
 <script>
 document.getElementById('site').textContent=SITE;
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=s=>document.querySelector(s),app=$('#app');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeUrl=u=>/^https?:\/\//.test(u||'')?u:'';
-let user=null,role='user';const isAdmin=()=>role=='admin';
+let user=null,role='user',myProf=null;const isAdmin=()=>role=='admin';
 const need=()=>user?false:(app.innerHTML='<div class="card">กรุณา <a href="#/login">Log In</a> ก่อน</div>',true);
 
 // ---------- Login ----------
 async function login(){
-  if(user){
-    const[{data:L},c]=await Promise.all([sb.from('battle_logs').select('result'),Promise.all(['tournaments','decklists'].map(async t=>(await sb.from(t).select('id',{count:'exact',head:true}).eq('user_id',user.id)).count||0))]);
-    const g=(L||[]).length,w=(L||[]).filter(x=>x.result=='win').length;
-    app.innerHTML=`<h2>บัญชีของฉัน</h2><div class="card"><b>${esc(user.email)}</b> <span class="badge ${isAdmin()?'a':''}">${isAdmin()?'Admin':'Player'}</span></div>
-    <div class="grid">${[['เกมที่บันทึก',g],['Win rate',(g?Math.round(w/g*100):0)+'%'],['ทัวร์ของฉัน',c[0]],['เด็คของฉัน',c[1]]].map(([l,v])=>`<div class="card stat"><b>${v}</b><span class="mut">${l}</span></div>`).join('')}</div>
-    <button id="out">Log out</button>`;
-    $('#out').onclick=async()=>{await sb.auth.signOut();location.hash='#/news'};return}
+  if(user)return myAccount(); // หน้าบัญชี + โปรไฟล์: ดู community.js
   app.innerHTML=`<div class="card"><h2>Log In / Sign Up</h2><div class="row"><input id="em" placeholder="email"><input id="pw" type="password" placeholder="password (6+)"></div>
   <button id="li">Log In</button> <button id="su">Sign Up</button><p id="msg" class="mut"></p></div>`;
   const run=f=>async()=>{const{error}=await sb.auth[f]({email:$('#em').value,password:$('#pw').value});
@@ -108,21 +100,21 @@ async function login(){
 const NCATS={products:'สินค้า',events:'อีเวนต์',tournaments:'การแข่งขัน',campaigns:'แคมเปญ',announcements:'ประกาศทั่วไป',columns:'คอลัมน์',others:'อื่น ๆ'};
 const catTab=()=>`<div class="ctabs">${[['','ทั้งหมด'],...Object.entries(NCATS)].map(([k,v])=>`<button class="ctab cat-${k||'all'} ${nq.cat==k?'on':''}" data-c="${k}">${v}</button>`).join('')}</div>`;
 const catOpts=(sel,all)=>(all?`<option value="">ทุกหมวดหมู่</option>`:'')+Object.entries(NCATS).map(([k,v])=>`<option value="${k}" ${k==sel?'selected':''}>${v}</option>`).join('');
-const NEWS_COLS='id,title,original_title,summary,body,category,source_name,source_url,published_at,created_at,is_featured,ai_generated,fb_post_id,status';
-const NEWS_PER=12;let nq={q:'',cat:'',src:'',sort:'new',page:0};
-const SRCS=[['','ทั้งหมด'],['official','แหล่งข่าวภายนอก'],['page','ข่าวจากเพจ']];
-const srcTag=n=>n.source_name?'<span class="chip src off">'+esc(n.source_name)+'</span>':'<span class="chip src pg">'+(n.fb_post_id?'เพจ Facebook':'ทีมงาน')+'</span>';
+const NEWS_COLS='id,title,original_title,summary,body,category,thumbnail_url,image_url,source_name,source_url,published_at,created_at,is_featured,ai_generated,fb_post_id,status';
+const NEWS_PER=12;let nq={q:'',cat:'',src:'page',sort:'new',page:0};
+const SRCS=[['page','ข่าวจากเพจ'],['','ทั้งหมด'],['official','ข่าวจาก Pokémon Asia']];
+const srcTag=n=>n.source_name?'<span class="chip src off">Pokémon Asia</span>':'<span class="chip src pg">'+(n.fb_post_id?'เพจ Facebook':'ทีมงาน')+'</span>';
 const nDate=n=>new Date(n.published_at||n.created_at);
 const fmtDate=d=>d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
 const isNewNews=n=>Date.now()-nDate(n)<3*864e5;
-const nImg=n=>`<div class="ph gbrain-ph" aria-hidden="true"><span>จี่</span><small>G-BRAIN</small></div>`;
+const nImg=n=>{const u=n.thumbnail_url||n.image_url;return safeUrl(u)?`<img src="${esc(u)}" loading="lazy" alt="" referrerpolicy="no-referrer" data-img>`:`<div class="ph" aria-hidden="true">🃏</div>`};
 const srcLabel=n=>n.fb_post_id?'ดูบน Facebook':(n.source_name?'อ่านประกาศต้นฉบับ':'แหล่งข่าว');
-const DISCLAIMER='G-Brain เป็นเว็บไซต์ชุมชนแฟนเมดที่ไม่เป็นทางการ ไม่ได้มีความเกี่ยวข้อง ได้รับการรับรอง หรือได้รับการสนับสนุนจาก Nintendo, The Pokémon Company, Creatures Inc. หรือ GAME FREAK inc. เครื่องหมายการค้าและทรัพย์สินทางปัญญาของบุคคลภายนอกเป็นของเจ้าของสิทธิ์แต่ละราย';
+const DISCLAIMER='เว็บไซต์นี้เป็นเว็บไซต์ชุมชน ไม่ใช่เว็บไซต์ทางการของ Pokémon หรือ The Pokémon Company ข่าวที่แสดงเป็นการรวบรวมและสรุปจากแหล่งข่าวต้นทาง Pokémon และชื่อที่เกี่ยวข้องเป็นเครื่องหมายการค้าของเจ้าของสิทธิ์';
 const fixImgs=root=>root.querySelectorAll('img[data-img]').forEach(i=>i.addEventListener('error',()=>{const d=document.createElement('div');d.className='ph';d.textContent='🃏';i.replaceWith(d)},{once:true}));
 
 async function news(id){
   if(id)return newsDetail(id);
-  app.innerHTML=`<h2>News</h2>`+(isAdmin()?`<div class="card"><input id="nt" placeholder="หัวข้อข่าว"> <input id="nu" placeholder="ลิงก์ต้นทาง https://..."> <select id="nc">${catOpts('announcements')}</select><textarea id="nb" placeholder="เนื้อหา"></textarea><button id="np">โพสต์</button></div>`:'')+
+  app.innerHTML=`<h2>ข่าวสารจากเพจ</h2>`+(isAdmin()?`<div class="card"><input id="nt" placeholder="หัวข้อข่าว"> <input id="nu" placeholder="ลิงก์ต้นทาง https://..."> <select id="nc">${catOpts('announcements')}</select><textarea id="nb" placeholder="เนื้อหา"></textarea><button id="np">โพสต์</button></div>`:'')+
   `<div class="pill" id="nsrc">${SRCS.map(([k,v])=>`<button data-s="${k}" class="${nq.src==k?'on':''}">${v}</button>`).join('')}</div>${catTab()}<div class="nctl"><input id="nq" type="search" placeholder="ค้นหาจากชื่อเรื่อง…" value="${esc(nq.q)}"><select id="nsort"><option value="new" ${nq.sort=='new'?'selected':''}>ใหม่สุดก่อน</option><option value="old" ${nq.sort=='old'?'selected':''}>เก่าสุดก่อน</option></select></div><div id="nl"></div><div id="npg" class="npg"></div><p class="mut disc">${esc(DISCLAIMER)}</p>`;
   if(isAdmin())$('#np').onclick=async()=>{const title=$('#nt').value.trim();if(!title)return;const{error}=await sb.from('news').insert({title,body:$('#nb').value,source_url:$('#nu').value.trim()||null,category:$('#nc').value,status:'published'});if(error)alert(error.message);else news()};
   let t;$('#nq').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{nq.q=e.target.value.trim();nq.page=0;loadNews()},300)};
@@ -274,19 +266,17 @@ const rres=r=>r.outcome=='Bye'||r.outcome=='No show'?'win':r.outcome=='ID'?'tie'
 const trec=R=>rec((R||[]).map(r=>({result:rres(r)})));
 function modal(html){const o=document.createElement('div');o.className='ov';o.innerHTML=`<div class="md">${html}</div>`;o.onclick=e=>{if(e.target==o)o.remove()};document.body.appendChild(o);return o}
 async function tnForm(t={}){
-  const{data:D}=await sb.from('decklists').select('id,name');
   const m=modal(`<h3 style="margin:0">${t.id?'Edit tournament':'Create tournament'}</h3>
   <input id="f_n" placeholder="Tournament name" value="${esc(t.name)}"><input id="f_d" type="date" value="${t.played_on||new Date().toISOString().slice(0,10)}">
   <select id="f_c">${opts(CATS,t.category,'Select tournament category')}</select><select id="f_f">${opts(FMTS,t.format,'Select format')}</select>
   <select id="f_p">${opts(PLACES,t.placement,'Add tournament placement')}</select>
-  <select id="f_k"><option value="">No decklist</option>${(D||[]).map(d=>`<option value="${d.id}" ${d.id==t.decklist_id?'selected':''}>${esc(d.name)}</option>`).join('')}</select>
   <div class="mut">Swiss (ไม่บังคับ — ใช้คำนวณโอกาสติด Top)</div>
   <div class="row two"><input id="f_pl" type="number" placeholder="ผู้เล่น" value="${t.players??''}"><input id="f_r" type="number" placeholder="จำนวนรอบ" value="${t.total_rounds??''}"><input id="f_cut" type="number" placeholder="Cut Top" value="${t.cut??''}"></div>
   <div class="row end"><button class="ghost" id="f_x">Cancel</button><button id="f_s">${t.id?'Save':'Add tournament'}</button></div>`);
   const v=i=>m.querySelector(i).value,n=i=>v(i)?+v(i):null;
   m.querySelector('#f_x').onclick=()=>m.remove();
   m.querySelector('#f_s').onclick=async()=>{
-    const row={name:v('#f_n').trim()||'Untitled',played_on:v('#f_d'),category:v('#f_c')||null,format:v('#f_f')||null,placement:v('#f_p')||null,decklist_id:v('#f_k')||null,players:n('#f_pl'),total_rounds:n('#f_r'),cut:n('#f_cut')};
+    const row={name:v('#f_n').trim()||'Untitled',played_on:v('#f_d'),category:v('#f_c')||null,format:v('#f_f')||null,placement:v('#f_p')||null,players:n('#f_pl'),total_rounds:n('#f_r'),cut:n('#f_cut')};
     const{error}=await(t.id?sb.from('my_tournaments').update(row).eq('id',t.id):sb.from('my_tournaments').insert(row));
     if(error)return alert(error.message);m.remove();t.id?tdetail(t.id):tours()};
 }
@@ -368,8 +358,6 @@ async function stats(){
   $('#sf').onchange=e=>{mfmt=e.target.value;stats()};$('#sd').onchange=e=>{mdeck=e.target.value;stats()};
 }
 
-// ---------- Decklists / Cards: ดู decks.js ----------
-
 // ---------- Admin: จัดการข่าว + สถานะ Scraper ----------
 let anf={status:'',cat:''};
 const runBadge=r=>`<span class="dot ${esc(r.status)}"></span>${{success:'สำเร็จ',partial:'สำเร็จบางส่วน',error:'ล้มเหลว',running:'กำลังทำงาน'}[r.status]||esc(r.status)}`;
@@ -379,7 +367,7 @@ async function adminNews(box){
   const S=Object.fromEntries((st||[]).map(r=>[r.key,r.value])),last=(runs||[])[0],lastOk=(runs||[]).find(r=>r.status=='success'||r.status=='partial');
   const stale=lastOk&&Date.now()-new Date(lastOk.started_at)>3*3600e3;
   box.innerHTML=`<div class="card"><b>สถานะ Scraper</b>
-    <div class="runbox" style="margin:8px 0">${last?`<span>${runBadge(last)}</span><span class="mut">รอบล่าสุด ${fmtDT(last.started_at)} (${esc(last.trigger||'-')})</span>`:'<span class="mut">ยังไม่เคยทำงาน — การซิงก์อัตโนมัติปิดไว้เป็นค่าเริ่มต้น ใช้การเพิ่มข่าวด้วยตนเอง หรือเปิดเมื่อยืนยันสิทธิ์แหล่งข้อมูลแล้ว</span>'}</div>
+    <div class="runbox" style="margin:8px 0">${last?`<span>${runBadge(last)}</span><span class="mut">รอบล่าสุด ${fmtDT(last.started_at)} (${esc(last.trigger||'-')})</span>`:'<span class="mut">ยังไม่เคยทำงาน — ตรวจว่ารัน pokemon-news.sql และตั้ง GitHub Actions แล้ว</span>'}</div>
     ${last?`<div class="mut">พบ ${last.found??0} · เพิ่มใหม่ ${last.inserted??0} · สรุป AI ${last.summarized??0} · ผิดพลาด ${last.failed??0}</div>`:''}
     ${lastOk?`<div class="mut">ตรวจสำเร็จล่าสุด: ${fmtDT(lastOk.started_at)}${stale?' <b class="bad">⚠ นานเกิน 3 ชั่วโมง ตรวจสอบ GitHub Actions</b>':''}</div>`:''}
     ${last&&last.error?`<div class="bad" style="margin-top:6px">ข้อผิดพลาด: ${esc(last.error)}</div>`:''}
@@ -391,7 +379,7 @@ async function adminNews(box){
       <label style="justify-content:flex-end"><span><input type="checkbox" id="sa" ${S.ai_enabled!==false?'checked':''}> เปิด AI สรุปข่าว</span></label>
       <label style="justify-content:flex-end"><span><input type="checkbox" id="sp" ${S.auto_publish!==false?'checked':''}> เผยแพร่ข่าวที่ดึงมาอัตโนมัติ</span></label>
       <button id="ss" class="ghost">บันทึกการตั้งค่า</button></div>
-    <div class="mut">Workflow ตรวจสอบตามกำหนด แต่ NEWS_SYNC_ENABLED ปิดไว้เป็นค่าเริ่มต้น — ใช้การเพิ่มข่าวด้วยตนเองจนกว่าจะยืนยันสิทธิ์แหล่งข้อมูล (หรือกด Run workflow ใน GitHub เพื่อรันทันที) · การเปิด AI ต้องตั้ง AI_ENABLED และ AI_API_KEY ฝั่ง Scraper ด้วย</div></div>
+    <div class="mut">Scraper รันบน GitHub Actions ทุก 30 นาที — คำขอสั่งตรวจเองจะถูกประมวลผลในรอบถัดไป (หรือกด Run workflow ใน GitHub เพื่อรันทันที) · การเปิด AI ต้องตั้ง AI_ENABLED และ AI_API_KEY ฝั่ง Scraper ด้วย</div></div>
     <div class="row"><select id="afs"><option value="">ทุกสถานะ</option>${['published','pending','hidden'].map(x=>`<option ${anf.status==x?'selected':''}>${x}</option>`).join('')}</select><select id="afc">${catOpts(anf.cat,1)}</select><a href="#/news" class="mut" style="align-self:center">+ โพสต์ข่าวเองที่หน้าข่าวสาร</a></div><div id="anl"></div>`;
   $('#sn').onclick=async()=>{const{error}=await sb.from('scraper_settings').upsert({key:'manual_requested_at',value:new Date().toISOString(),updated_at:new Date().toISOString()});$('#snm').textContent=error?error.message:'ส่งคำขอแล้ว — จะทำงานในรอบถัดไป'};
   $('#ss').onclick=async()=>{const iv=Math.round(Number($('#si').value));if(!(iv>=30&&iv<=1440)){alert('ช่วงตรวจสอบต้อง 30–1440 นาที');return}
@@ -420,43 +408,27 @@ let atab='overview';
 async function admin(){
   if(need())return;
   if(!isAdmin()){app.innerHTML='<div class="card bad">หน้านี้สำหรับผู้ดูแลระบบเท่านั้น</div>';return}
-  const tabs=[['overview','ภาพรวม'],['users','ผู้ใช้'],['news','ข่าว'],['tours','ทัวร์'],['decks','เด็ค']];
+  const tabs=[['overview','ภาพรวม'],['users','สมาชิก'],['community','ช่องแชท'],['news','ข่าว'],['tours','ทัวร์']];
   app.innerHTML=`<div class="admbar">🛡️ Admin Panel</div><div class="row">${tabs.map(([k,l])=>`<button data-t="${k}" class="${k==atab?'':'ghost'}">${l}</button>`).join('')}</div><div id="ab"></div>`;
   app.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{atab=b.dataset.t;admin()});
   const box=$('#ab');
   if(atab=='overview'){const{data:s}=await sb.rpc('admin_stats');
-    box.innerHTML=`<div class="grid">${[['ผู้ใช้','users'],['Battle Logs','logs'],['ทัวร์','tournaments'],['เด็ค','decks'],['การ์ด','cards'],['ข่าว','news']].map(([l,k])=>`<div class="card stat"><b>${s?.[k]??0}</b><span class="mut">${l}</span></div>`).join('')}</div>`}
-  else if(atab=='users'){const{data}=await sb.from('profiles').select('*').order('created_at');
-    box.innerHTML=`<div class="card" style="overflow:auto"><table><tr><th>Email</th><th>Role</th><th>สมัครเมื่อ</th><th></th></tr>${(data||[]).map(u=>`<tr><td>${esc(u.email)}</td><td>${esc(u.role)}</td><td>${new Date(u.created_at).toLocaleDateString()}</td><td>${u.id==user.id?'(คุณ)':`<button data-u="${u.id}" data-nr="${u.role=='admin'?'user':'admin'}">${u.role=='admin'?'ถอดสิทธิ์':'ตั้งเป็น admin'}</button>`}</td></tr>`).join('')}</table></div>`;
-    box.querySelectorAll('[data-u]').forEach(b=>b.onclick=async()=>{await sb.from('profiles').update({role:b.dataset.nr}).eq('id',b.dataset.u);admin()})}
+    box.innerHTML=`<div class="grid">${[['สมาชิก','users'],['โพสต์','posts'],['ข้อความแชท','messages'],['Battle Logs','logs'],['ทัวร์','tournaments'],['ข่าว','news']].map(([l,k])=>`<div class="card stat"><b>${s?.[k]??0}</b><span class="mut">${l}</span></div>`).join('')}</div>`}
+  else if(atab=='users')await adminMembers(box);
+  else if(atab=='community')await adminCommunity(box);
   else if(atab=='news')await adminNews(box);
-  else{const[tb,col]={news:['news','title'],tours:['tournaments','name'],decks:['decklists','name']}[atab];
-    let tcg='';if(atab=='decks'){const{data:s}=await sb.from('scraper_settings').select('value').eq('key','tcg_last_run').maybeSingle(),v=s?.value;
-      tcg=`<div class="card"><b>Scraper การ์ด/เด็ค (sync-tcg)</b><div class="mut">${v?`ทำงานล่าสุด ${fmtDT(v.at)} · การ์ดใหม่ ${v.cards?.inserted??'-'} · เด็คใหม่ ${v.decks?.inserted??'-'}`:'ยังไม่เคยทำงาน — ระบบซิงก์ถูกปิดไว้เป็นค่าเริ่มต้น ต้องตรวจสอบสิทธิ์แหล่งข้อมูลก่อนเปิด CARD_SYNC_ENABLED / DECK_SYNC_ENABLED'}</div>${v?.problems?.length?`<details><summary class="mut">ปัญหา (${v.problems.length})</summary><pre class="mut">${esc(v.problems.join('\n'))}</pre></details>`:''}</div>`}
+  else{const[tb,col]={tours:['tournaments','name']}[atab];
     const{data}=await sb.from(tb).select(`id,${col},created_at`).order('created_at',{ascending:false});
-    box.innerHTML=tcg+(atab=='news'?'<p><a href="#/news">+ โพสต์ข่าวใหม่ที่หน้าข่าวสาร</a></p>':'')+`<div class="card"><table>${(data||[]).map(r=>`<tr><td>${esc(r[col])}</td><td class="mut">${new Date(r.created_at).toLocaleDateString()}</td><td><button data-x="${r.id}">ลบ</button></td></tr>`).join('')||'<tr><td class="mut">ไม่มีข้อมูล</td></tr>'}</table></div>`;
+    box.innerHTML=`<div class="card"><table>${(data||[]).map(r=>`<tr><td>${esc(r[col])}</td><td class="mut">${new Date(r.created_at).toLocaleDateString()}</td><td><button data-x="${r.id}">ลบ</button></td></tr>`).join('')||'<tr><td class="mut">ไม่มีข้อมูล</td></tr>'}</table></div>`;
     box.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{if(confirm('ลบรายการนี้?')){await sb.from(tb).delete().eq('id',b.dataset.x);admin()}})}
 }
 
-
-// ---------- About / Legal / Contact ----------
-function legalPage(kind){
-  const pages={
-    about:{title:'เกี่ยวกับจี่สมอง',body:`<p>จี่สมอง (G-Brain) เป็นเว็บไซต์ชุมชนเกมอิสระที่สร้างขึ้นโดยแฟนเกม เพื่อแบ่งปันข่าวสาร ความรู้ เครื่องมือ และประสบการณ์การเล่นเกมการ์ดและเกมอื่น ๆ</p><p>เว็บไซต์นี้เป็นโครงการอิสระ ไม่ใช่เว็บไซต์ทางการของผู้ผลิตเกมหรือเจ้าของเครื่องหมายการค้าใด ๆ</p>`},
-    disclaimer:{title:'Disclaimer',body:`<p>G-Brain เป็นเว็บไซต์ชุมชนแฟนเมดที่ไม่เป็นทางการ ไม่ได้มีความเกี่ยวข้อง ได้รับการรับรอง สนับสนุน หรือดำเนินงานร่วมกับ Nintendo, The Pokémon Company, Creatures Inc., GAME FREAK inc. หรือบริษัทในเครือ</p><p>ชื่อเกม ชื่อตัวละคร เครื่องหมายการค้า และทรัพย์สินทางปัญญาของบุคคลภายนอกเป็นของเจ้าของสิทธิ์แต่ละราย การกล่าวถึงชื่อดังกล่าวมีวัตถุประสงค์เพื่อระบุเนื้อหาและให้ข้อมูลเกี่ยวกับชุมชนผู้เล่นเท่านั้น</p><p>การแสดง Disclaimer ไม่ได้ให้สิทธิ์ G-Brain ในการใช้ ทำซ้ำ ดัดแปลง หรือเผยแพร่ทรัพย์สินทางปัญญาของบุคคลอื่น</p><p>ข้อมูลข่าวสารและข้อมูลชุมชนอาจมีการเปลี่ยนแปลง โปรดตรวจสอบรายละเอียดจากแหล่งข้อมูลต้นทาง</p>`},
-    copyright:{title:'Copyright Policy',body:`<h3>การเคารพสิทธิ์ในทรัพย์สินทางปัญญา</h3><p>G-Brain เคารพสิทธิ์ของเจ้าของผลงานและเครื่องหมายการค้าทุกฝ่าย เว็บไซต์มุ่งใช้เนื้อหาที่สร้างขึ้นเอง เนื้อหาที่ได้รับอนุญาต หรือข้อมูลที่สามารถใช้ได้ตามเงื่อนไขที่เกี่ยวข้อง</p><h3>การแจ้งเนื้อหาที่อาจละเมิดสิทธิ์</h3><p>เจ้าของสิทธิ์หรือตัวแทนสามารถแจ้ง URL ของเนื้อหา รายละเอียดผลงาน หลักฐานแสดงสิทธิ์ และข้อมูลสำหรับติดต่อกลับผ่านช่องทางติดต่อผู้ดูแลเว็บไซต์</p><h3>การตรวจสอบและดำเนินการ</h3><p>ผู้ดูแลจะตรวจสอบคำร้องตามข้อมูลที่ได้รับ และอาจจำกัดการเข้าถึงหรือถอดเนื้อหาที่ถูกร้องเรียนระหว่างตรวจสอบตามความเหมาะสม</p><p>การส่งคำร้องควรให้ข้อมูลที่ถูกต้องและครบถ้วน การแจ้งลบไม่ได้เป็นการตัดสินข้อพิพาททางกฎหมาย</p><h3>เนื้อหาจากสมาชิก</h3><p>สมาชิกต้องส่งเฉพาะเนื้อหาที่ตนมีสิทธิ์ใช้งานหรือได้รับอนุญาตให้เผยแพร่ ห้ามอัปโหลดภาพการ์ด ภาพตัวละคร หรือผลงานของบุคคลอื่นโดยไม่มีสิทธิ์</p>`},
-    contact:{title:'ติดต่อและแจ้งเรื่องลิขสิทธิ์',body:`<p>หากพบเนื้อหาที่อาจละเมิดลิขสิทธิ์หรือเครื่องหมายการค้า โปรดติดต่อผู้ดูแลเว็บไซต์ผ่านช่องทางที่ใช้ติดต่อทีมงานจี่สมอง</p><p>กรุณาระบุ URL ของหน้าเว็บที่เกี่ยวข้อง ชื่อผลงานหรือเครื่องหมายการค้า รายละเอียดสิทธิ์ที่ถือครอง และข้อมูลติดต่อกลับ</p><p class="mut">หมายเหตุ: ยังไม่มีการตั้งค่าอีเมลรับเรื่องใน Source Code ชุดนี้ กรุณาเพิ่มอีเมลหรือช่องทางติดต่อที่ผู้ดูแลควบคุมได้ก่อนเปิดใช้งานจริง</p>`}
-  };
-  const p=pages[kind]||pages.about;
-  app.innerHTML=`<a href="#/news">← กลับหน้าหลัก</a><article class="card legal-page"><h2>${p.title}</h2>${p.body}<p class="mut">${esc(DISCLAIMER)}</p></article>`;
-}
-
 // ---------- Router ----------
-const pages={news,logs,tours,decks,cards:cardsPg,login,admin,swiss,stats,about:()=>legalPage('about'),disclaimer:()=>legalPage('disclaimer'),copyright:()=>legalPage('copyright'),contact:()=>legalPage('contact')};
-async function go(){document.querySelectorAll('.ov').forEach(o=>o.remove());const[p,id]=(location.hash.slice(2)||'news').split('/');$('main').classList.toggle('wide',(p=='decks'&&!id)||p=='cards');$('#banner').style.display=(p=='news'||!pages[p])?'block':'none';document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#/'+(pages[p]?p:'news')));await(pages[p]||news)(id)}
+const pages={news,feed,chat,u:profilePage,logs,tours,login,admin,swiss,stats};
+async function go(){chatLeave();document.querySelectorAll('.ov').forEach(o=>o.remove());const[p,id]=(location.hash.slice(2)||'news').split('/');$('main').classList.toggle('wide',p=='chat');$('#banner').style.display=(p=='news'||!pages[p])?'block':'none';document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#/'+(pages[p]?p:'news')));await(pages[p]||news)(id)}
 sb.auth.onAuthStateChange((_,s)=>{user=s?.user||null;
-  setTimeout(async()=>{role='user';
-    if(user){const{data}=await sb.from('profiles').select('role').eq('id',user.id).maybeSingle();role=data?.role||'user'}
+  setTimeout(async()=>{role='user';myProf=null;
+    if(user){const{data}=await sb.from('profiles').select('role,display_name,avatar_url,bio,banned').eq('id',user.id).maybeSingle();myProf=data;role=data?.role||'user'}
     $('#auth').textContent=user?'👤 บัญชีของฉัน':'🔑 Log In';
     document.querySelectorAll('.adm').forEach(e=>e.style.display=isAdmin()?'block':'none');go()},0)});
 addEventListener('hashchange',go);

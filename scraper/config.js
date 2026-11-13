@@ -14,9 +14,7 @@ const bool = (k, d) => has(k) ? /^(1|true|yes|on)$/i.test(env[k]) : d;
 const list = (k, d) => has(k) ? env[k].split(',').map(s => s.trim()).filter(Boolean) : d;
 
 module.exports = {
-  sourceName: env.SOURCE_NAME || 'External gaming news source',
-  // External-source synchronization is opt-in only. Review each source's terms and permissions first.
-  newsSyncEnabled: bool('NEWS_SYNC_ENABLED', false),
+  sourceName: env.SOURCE_NAME || 'Pokémon Card Game Asia',
   listUrls: list('SOURCE_LIST_URLS', ['https://asia.pokemon-card.com/th/info/']),
   // โฮสต์ที่ยอมให้ดึงหน้า (ป้องกัน redirect ไปที่อื่น)
   fetchHosts: list('SOURCE_FETCH_HOSTS', ['asia.pokemon-card.com']),
@@ -44,18 +42,4 @@ module.exports = {
     maxInputChars: num('AI_MAX_INPUT_CHARS', 6000),
   },
   errorWebhook: env.ERROR_WEBHOOK_URL || '',
-  // ---------- การ์ด + เด็คลิสต์ (sync-tcg.js) ----------
-  tcg: {
-    cardSyncEnabled: bool('CARD_SYNC_ENABLED', false),
-    deckSyncEnabled: bool('DECK_SYNC_ENABLED', false),
-    cardListUrl: env.CARD_LIST_URL || 'https://asia.pokemon-card.com/th/card-search/list/',
-    cardExpansions: list('CARD_EXPANSIONS', []),             // เช่น MA6 (ว่าง = ทุกชุด)
-    maxCardsPerRun: num('CARDS_MAX_PER_RUN', 80),            // จำนวนหน้ารายละเอียดการ์ดต่อรอบ
-    maxListPagesPerRun: num('CARDS_MAX_LIST_PAGES', 30),
-    deckUrls: list('DECK_SOURCE_URLS', []),
-    maxDecksPerRun: num('DECKS_MAX_PER_RUN', 12),
-    // รูปปก/รูปการ์ดของเด็ค: เก็บเป็น "URL" (ลิงก์ไปรูปต้นทาง) ไม่ได้ดาวน์โหลดมาเก็บ — ปิดได้ด้วย ALLOW_DECK_IMAGES=false
-    allowDeckImages: bool('ALLOW_DECK_IMAGES', false),
-    fetchHosts: ['asia.pokemon-card.com', 'limitlesstcg.com', 'pokecabook.com'],
-  },
 };

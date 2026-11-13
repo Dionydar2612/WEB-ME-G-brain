@@ -15,7 +15,6 @@ const safeLink = u => { try { const x = new URL(u); return x.protocol === 'https
 const safeImage = u => { try { return new URL(u).protocol === 'https:'; } catch { return false; } };
 
 async function run({ dryRun = false, force = false, http = new Http(), db = dryRun ? null : new Db(), trigger = 'cli' } = {}) {
-  if (!cfg.newsSyncEnabled) { log('ข้ามการซิงก์ข่าวอัตโนมัติ: NEWS_SYNC_ENABLED=false; ใช้การเพิ่มข่าวด้วยตนเองหรือเปิดเมื่อยืนยันสิทธิ์และเงื่อนไขแหล่งข้อมูลแล้ว'); return { skipped: true, reason: 'NEWS_SYNC_DISABLED' }; }
   const stats = { found: 0, inserted: 0, summarized: 0, failed: 0 };
   const problems = [];
   let runId = null, settings = {}, existing = [], blocked = new Set();

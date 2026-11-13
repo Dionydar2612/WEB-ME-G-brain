@@ -70,7 +70,7 @@ a.btn{display:inline-block;background:var(--pri);color:#fff;padding:10px 18px;bo
 .chip.src{font-size:12px;border:1px solid var(--bd);background:var(--card)}.chip.src.pg{background:#1877f2;color:#fff;border-color:#1877f2}.chip.src.off{background:var(--card);color:var(--tx)}#nsrc{display:flex;flex-wrap:wrap;margin:8px 0}
 </style></head><body>
 <nav><div class="brand"><img src="assets/mascot.webp" alt=""><b id="site"></b></div>
-<div class="sec">คอมมูนิตี้</div><a href="#/news">📰 ข่าวสารจากเพจ</a><a href="#/feed">💬 ฟีดชุมชน</a><a href="#/chat">🗨️ ห้องแชท</a>
+<div class="sec">คอมมูนิตี้</div><a href="#/news">📰 ข่าวสารจากเพจ</a><a href="#/feed">💬 ฟีดชุมชน</a><a href="#/chat">🗨️ ห้องแชท</a><a href="#/friends">👥 เพื่อน<span id="fbadge"></span></a>
 <div class="sec">เครื่องมือ</div><a href="#/tours">🏆 Tournaments</a><a href="#/swiss">🧮 คำนวณ Cut</a>
 <div class="sec">ของฉัน</div><a href="#/logs">⚔️ Battle Logs</a><a href="#/stats">📊 Stats</a><a href="#/login" id="auth">Log In</a>
 <div class="sec adm">ผู้ดูแลระบบ</div><a href="#/admin" class="adm">🛡️ Admin Panel</a></nav>
@@ -424,12 +424,12 @@ async function admin(){
 }
 
 // ---------- Router ----------
-const pages={news,feed,chat,u:profilePage,logs,tours,login,admin,swiss,stats};
+const pages={news,feed,chat,friends,u:profilePage,logs,tours,login,admin,swiss,stats};
 async function go(){chatLeave();document.querySelectorAll('.ov').forEach(o=>o.remove());const[p,id]=(location.hash.slice(2)||'news').split('/');$('main').classList.toggle('wide',p=='chat');$('#banner').style.display=(p=='news'||!pages[p])?'block':'none';document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#/'+(pages[p]?p:'news')));await(pages[p]||news)(id)}
 sb.auth.onAuthStateChange((_,s)=>{user=s?.user||null;
   setTimeout(async()=>{role='user';myProf=null;
     if(user){const{data}=await sb.from('profiles').select('role,display_name,avatar_url,bio,banned').eq('id',user.id).maybeSingle();myProf=data;role=data?.role||'user'}
     $('#auth').textContent=user?'👤 บัญชีของฉัน':'🔑 Log In';
-    document.querySelectorAll('.adm').forEach(e=>e.style.display=isAdmin()?'block':'none');go()},0)});
+    document.querySelectorAll('.adm').forEach(e=>e.style.display=isAdmin()?'block':'none');refreshFriendBadge();go()},0)});
 addEventListener('hashchange',go);
 </script></body></html>

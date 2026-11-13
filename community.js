@@ -308,11 +308,12 @@ async function profilePage(id){
   const{data:p}=await sb.from('member_profiles').select('*').eq('id',id).maybeSingle();
   if(!p){app.innerHTML='<p><a href="#/feed">← กลับฟีด</a></p><div class="card bad">ไม่พบสมาชิกคนนี้</div>';return}
   PROF.set(p.id,p);
-  const{count}=await sb.from('posts').select('id',{count:'exact',head:true}).eq('user_id',id);
+  const[{count},{data:fc}]=await Promise.all([sb.from('posts').select('id',{count:'exact',head:true}).eq('user_id',id),sb.rpc('friend_count',{uid:id})]);
   app.innerHTML=`<p><a href="#/feed">← กลับฟีด</a></p><div class="card prof">${avatar(p,'lg')}<div><h2 style="margin:0">${esc(p.name)} ${p.role=='admin'?'<span class="badge a">Admin</span>':''}${p.banned?'<span class="badge">ถูกระงับ</span>':''}</h2>
-    <div class="mut">เข้าร่วมเมื่อ ${new Date(p.created_at).toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'})} · ${count||0} โพสต์</div>
+    <div class="mut">เข้าร่วมเมื่อ ${new Date(p.created_at).toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'})} · ${count||0} โพสต์ · ${fc||0} เพื่อน</div>
     ${p.bio?`<p style="white-space:pre-wrap;margin:8px 0 0">${esc(p.bio)}</p>`:''}
-    ${user&&user.id==id?'<p><a class="btn" href="#/login">แก้ไขโปรไฟล์</a></p>':''}</div></div><h3>โพสต์ของ ${esc(p.name)}</h3><div id="pl"></div>`;
+    ${user&&user.id==id?'<p><a class="btn" href="#/login">แก้ไขโปรไฟล์</a> <a class="btn" href="#/friends">👥 เพื่อนของฉัน</a></p>':'<p id="fbtn"></p>'}</div></div><h3>โพสต์ของ ${esc(p.name)}</h3><div id="pl"></div>`;
+  if($('#fbtn'))friendButton($('#fbtn'),id);
   postList($('#pl'),{userId:id});
 }
 
@@ -399,4 +400,70 @@ async function adminCommunity(box){
       const{error}=await sb.from('channels').update({name,description:m.querySelector('#ed').value.trim()||null,position:+m.querySelector('#ep').value||0,admin_only_post:m.querySelector('#ea').checked}).eq('id',c.id);
       if(error)return alert(error.message);m.remove();adminCommunity(box)};
   });
+}
+
+
+// ================= เพื่อน =================
+async function friendRow(otherId){ // ความสัมพันธ์ระหว่างฉันกับอีกคน (null = ยังไม่เกี่ยวข้อง)
+  const{data}=await sb.from('friendships').select('id,requester,addressee,status')
+    .or(`and(requester.eq.${user.id},addressee.eq.${otherId}),and(requester.eq.${otherId},addressee.eq.${user.id})`).maybeSingle();
+  return data;
+}
+async function friendButton(box,otherId){
+  if(!user){box.innerHTML='<a class="btn" href="#/login">Log In เพื่อเพิ่มเพื่อน</a>';return}
+  if(!canPost())return;
+  const r=await friendRow(otherId);
+  const set=(label,fn,ghost)=>{box.innerHTML=`<button class="${ghost?'ghost':''}" id="fb1">${label}</button>`;$('#fb1').onclick=async()=>{$('#fb1').disabled=true;
+    const{error}=await fn();if(error)alert(error.message);friendButton(box,otherId);refreshFriendBadge()}};
+  if(!r)set('➕ เพิ่มเพื่อน',()=>sb.from('friendships').insert({addressee:otherId}));
+  else if(r.status=='accepted')set('✓ เป็นเพื่อนกัน (เลิกเป็นเพื่อน)',()=>confirm('เลิกเป็นเพื่อนกับคนนี้?')?sb.from('friendships').delete().eq('id',r.id):{},true);
+  else if(r.requester==user.id)set('⏳ ส่งคำขอแล้ว (ยกเลิก)',()=>sb.from('friendships').delete().eq('id',r.id),true);
+  else{box.innerHTML='<button id="fa">✓ ยอมรับคำขอ</button> <button class="ghost" id="fd">ปฏิเสธ</button>';
+    const act=f=>async()=>{const{error}=await f();if(error)alert(error.message);friendButton(box,otherId);refreshFriendBadge()};
+    $('#fa').onclick=act(()=>sb.from('friendships').update({status:'accepted'}).eq('id',r.id));
+    $('#fd').onclick=act(()=>sb.from('friendships').delete().eq('id',r.id))}
+}
+async function refreshFriendBadge(){ // ตัวเลขคำขอที่รอตอบบนเมนู
+  const el=document.getElementById('fbadge');if(!el)return;
+  if(!user){el.textContent='';return}
+  const{count}=await sb.from('friendships').select('id',{count:'exact',head:true}).eq('addressee',user.id).eq('status','pending');
+  el.textContent=count?` (${count})`:'';
+}
+const memberRow=(p,right)=>`<div class="card frow"><a href="#/u/${p.id}" class="prof" style="gap:10px;text-decoration:none;color:inherit">${avatar(p)}<b class="pname">${esc(p.name)}</b></a><div class="row">${right}</div></div>`;
+
+async function friends(){
+  if(need())return;
+  let tab=sessionStorage.getItem('ftab')||'list';
+  app.innerHTML=`<h2>👥 เพื่อน</h2>
+  <div class="card"><b>ค้นหาสมาชิก</b><div class="row"><input id="fq" placeholder="พิมพ์ชื่อที่แสดง (อย่างน้อย 2 ตัวอักษร)" maxlength="30"><button id="fgo">ค้นหา</button></div><div id="fres"></div></div>
+  <div class="ctabs" id="ftabs"></div><div id="fbody"></div>`;
+  const search=async()=>{const q=$('#fq').value.trim().replace(/[%_\\,()]/g,'');const box=$('#fres');
+    if(q.length<2){box.innerHTML='<p class="mut">พิมพ์อย่างน้อย 2 ตัวอักษร</p>';return}
+    box.innerHTML='<p class="mut">กำลังค้นหา…</p>';
+    const{data}=await sb.from('member_profiles').select('id,name,avatar_url,role,banned').ilike('name','%'+q+'%').neq('id',user.id).eq('banned',false).limit(20);
+    (data||[]).forEach(p=>PROF.set(p.id,p));
+    box.innerHTML=(data||[]).length?data.map(p=>memberRow(p,`<span data-fb="${p.id}"></span>`)).join(''):'<p class="mut">ไม่พบสมาชิก</p>';
+    box.querySelectorAll('[data-fb]').forEach(sp=>friendButton(sp,sp.dataset.fb))};
+  $('#fgo').onclick=search;$('#fq').onkeydown=e=>{if(e.key=='Enter')search()};
+
+  const{data:rows}=await sb.from('friendships').select('id,requester,addressee,status,created_at').order('created_at',{ascending:false});
+  const L=rows||[],other=r=>r.requester==user.id?r.addressee:r.requester;
+  await loadProfiles(L.map(other));
+  const groups={list:L.filter(r=>r.status=='accepted'),in:L.filter(r=>r.status=='pending'&&r.addressee==user.id),out:L.filter(r=>r.status=='pending'&&r.requester==user.id)};
+  const names={list:'เพื่อนของฉัน',in:'คำขอที่ได้รับ',out:'คำขอที่ส่งไป'};
+  const paint=()=>{sessionStorage.setItem('ftab',tab);
+    $('#ftabs').innerHTML=Object.keys(names).map(k=>`<button class="ctab ${tab==k?'on':''}" data-t="${k}">${names[k]} (${groups[k].length})</button>`).join('');
+    $('#ftabs').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tab=b.dataset.t;paint()});
+    const g=groups[tab];
+    $('#fbody').innerHTML=g.length?g.map(r=>memberRow(prof(other(r)),
+      tab=='in'?`<button data-a="${r.id}">ยอมรับ</button><button class="ghost" data-d="${r.id}">ปฏิเสธ</button>`
+      :tab=='out'?`<button class="ghost" data-d="${r.id}">ยกเลิกคำขอ</button>`
+      :`<button class="ghost" data-d="${r.id}">เลิกเป็นเพื่อน</button>`)).join('')
+      :`<div class="card mut">${tab=='list'?'ยังไม่มีเพื่อน ลองค้นหาสมาชิกด้านบนแล้วกดเพิ่มเพื่อนได้เลย':'ไม่มีรายการ'}</div>`;
+    $('#fbody').querySelectorAll('[data-a]').forEach(b=>b.onclick=async()=>{b.disabled=true;
+      const{error}=await sb.from('friendships').update({status:'accepted'}).eq('id',b.dataset.a);if(error)alert(error.message);friends();refreshFriendBadge()});
+    $('#fbody').querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{
+      if(tab=='list'&&!confirm('เลิกเป็นเพื่อนกับคนนี้?'))return;b.disabled=true;
+      const{error}=await sb.from('friendships').delete().eq('id',b.dataset.d);if(error)alert(error.message);friends();refreshFriendBadge()})};
+  paint();refreshFriendBadge();
 }

@@ -41,3 +41,6 @@ main.wide{max-width:1100px;padding:24px;margin:0 auto;width:auto}
   .chl{display:flex;gap:6px;overflow-x:auto;padding:6px}.chl .sec{display:none}.chi{flex-shrink:0}
   .mdel,.msg.cp .mt{opacity:1}.msg.cp .mt{display:none}.msg.cp{padding-left:58px}
 }
+
+/* เพื่อน */
+.frow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px}

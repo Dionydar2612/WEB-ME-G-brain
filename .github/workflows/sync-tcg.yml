@@ -1,0 +1,30 @@
+name: sync-tcg
+# Optional third-party metadata sync. Disabled by default; verify source terms/permissions before enabling.
+# การ์ดดึงทีละส่วน (CARDS_MAX_PER_RUN ต่อรอบ) แล้วจำตำแหน่งไว้ ทำให้ครบเองทีละรอบ
+on:
+  schedule: [{cron: "17 */6 * * *"}]
+  workflow_dispatch:
+    inputs:
+      only: {description: "cards | decks | (ว่าง = ทั้งคู่)", required: false, default: ""}
+concurrency: {group: sync-tcg, cancel-in-progress: false}
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20, cache: npm, cache-dependency-path: scraper/package-lock.json}
+      - run: npm ci --prefix scraper
+      - run: node scraper/sync-tcg.js ${{ inputs.only && format('--{0}', inputs.only) || '' }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          CARD_SYNC_ENABLED: ${{ vars.CARD_SYNC_ENABLED || 'false' }}
+          DECK_SYNC_ENABLED: ${{ vars.DECK_SYNC_ENABLED || 'false' }}
+          CARDS_MAX_PER_RUN: ${{ vars.CARDS_MAX_PER_RUN || '80' }}
+          CARD_EXPANSIONS: ${{ vars.CARD_EXPANSIONS }}
+          DECK_SOURCE_URLS: ${{ vars.DECK_SOURCE_URLS }}
+          DECKS_MAX_PER_RUN: ${{ vars.DECKS_MAX_PER_RUN || '12' }}
+          ALLOW_DECK_IMAGES: 'false'
+          ERROR_WEBHOOK_URL: ${{ secrets.ERROR_WEBHOOK_URL }}

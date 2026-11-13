@@ -186,14 +186,14 @@ async function feed(){
 }
 
 // ================= ห้องแชทเรียลไทม์ =================
-const CH={tok:0,sub:null,poll:null,cur:null,msgs:[],ids:new Set(),older:false};
+const CH={tok:0,sub:null,poll:null,cur:null,msgs:[],ids:new Set(),older:false,table:'messages',filter:null};
 function chatLeave(){
   CH.tok++;
   if(CH.sub){sb.removeChannel(CH.sub);CH.sub=null}
   if(CH.poll){clearInterval(CH.poll);CH.poll=null}
 }
 const msgHtml=(m,compact)=>{
-  const a=prof(m.user_id),img=okImg(m.image_url),can=user&&(m.user_id==user.id||isAdmin());
+  const a=prof(m.user_id),img=okImg(m.image_url),can=user&&(m.user_id==user.id||(isAdmin()&&!CH.cur?.dm));
   return `<div class="msg${compact?' cp':''}" data-id="${m.id}">${compact?`<span class="mt">${clock(m.created_at)}</span>`:avatar(a)}
   <div class="mb">${compact?'':`<div class="mh"><a href="#/u/${m.user_id}" class="pname">${esc(a.name)}</a>${a.role=='admin'?'<span class="badge a">Admin</span>':''}<span class="mut">${dayLabel(m.created_at)}</span></div>`}
   ${m.body?`<div class="mtx">${rich(m.body)}</div>`:''}${img?`<img class="mimg" src="${esc(img)}" loading="lazy" alt="" data-zoom>`:''}</div>
@@ -203,7 +203,7 @@ function paintMsgs(stick){
   const box=$('#msgs');if(!box)return;
   const prevH=box.scrollHeight,prevTop=box.scrollTop;
   let last=null;
-  box.innerHTML=(CH.older?'<div class="npg"><button class="ghost" id="older">โหลดข้อความเก่ากว่า</button></div>':'<div class="mut chstart">จุดเริ่มต้นของห้อง #'+esc(CH.cur.name)+'</div>')+
+  box.innerHTML=(CH.older?'<div class="npg"><button class="ghost" id="older">โหลดข้อความเก่ากว่า</button></div>':'<div class="mut chstart">'+(CH.cur.dm?'จุดเริ่มต้นการสนทนากับ ':'จุดเริ่มต้นของห้อง #')+esc(CH.cur.name)+'</div>')+
     CH.msgs.map(m=>{const compact=last&&last.user_id==m.user_id&&new Date(m.created_at)-new Date(last.created_at)<3e5;last=m;return msgHtml(m,compact)}).join('');
   if(stick)box.scrollTop=box.scrollHeight;else box.scrollTop=prevTop+(box.scrollHeight-prevH);
   const ob=$('#older');if(ob)ob.onclick=loadOlder;
@@ -211,8 +211,8 @@ function paintMsgs(stick){
 async function loadOlder(){
   const b=$('#older');if(b)b.disabled=true;
   const before=CH.msgs[0]?.created_at;
-  const{data}=await sb.from('messages').select('*').eq('channel_id',CH.cur.id).lt('created_at',before).order('created_at',{ascending:false}).limit(CHAT_PER+1);
-  const rows=data||[];CH.older=rows.length>CHAT_PER;rows.splice(CHAT_PER);
+  const{data}=await CH.filter(sb.from(CH.table).select('*')).lt('created_at',before).order('created_at',{ascending:false}).limit(CHAT_PER+1);
+  const rows=data||[];CH.older=rows.length>CHAT_PER;rows.splice(CHAT_PER);rows.forEach(r=>r.channel_id=CH.cur.id);
   await loadProfiles(rows.map(r=>r.user_id));
   rows.reverse().forEach(r=>{if(!CH.ids.has(r.id)){CH.ids.add(r.id);CH.msgs.unshift(r)}});
   CH.msgs.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
@@ -239,9 +239,9 @@ async function chat(slug){
   if(!chs?.length){app.innerHTML='<div class="card">ยังไม่มีห้องแชท'+(isAdmin()?' — สร้างได้ที่ <a href="#/admin">Admin</a> › ช่องแชท':'')+'</div>';return}
   const cur=chs.find(c=>c.slug==slug)||chs.find(c=>c.slug=='general')||chs[0];
   if(slug!=cur.slug)history.replaceState(null,'','#/chat/'+cur.slug);
-  CH.cur=cur;CH.msgs=[];CH.ids=new Set();CH.older=false;
+  CH.cur=cur;CH.msgs=[];CH.ids=new Set();CH.older=false;CH.table='messages';CH.filter=q=>q.eq('channel_id',cur.id);
   const locked=cur.admin_only_post&&!isAdmin();
-  app.innerHTML=`<div class="chat"><aside class="chl"><div class="sec">ห้องแชท</div>${chs.map(c=>`<a href="#/chat/${esc(c.slug)}" class="chi ${c.id==cur.id?'on':''}"><span># ${esc(c.name)}</span>${c.admin_only_post?' 🔒':''}</a>`).join('')}</aside>
+  app.innerHTML=`<div class="chat"><aside class="chl"><div class="sec">ห้องแชท</div>${chs.map(c=>`<a href="#/chat/${esc(c.slug)}" class="chi ${c.id==cur.id?'on':''}"><span># ${esc(c.name)}</span>${c.admin_only_post?' 🔒':''}</a>`).join('')}${user?'<a href="#/dm" class="chi"><span>💬 แชทกับเพื่อน</span></a>':''}</aside>
   <section class="chm"><header class="chh"><b># ${esc(cur.name)}</b><span class="mut chd">${esc(cur.description||'')}</span><span class="live" id="live" title="สถานะการเชื่อมต่อ">○ กำลังเชื่อมต่อ</span></header>
   <div class="msgs" id="msgs"><div class="mut" style="padding:12px">กำลังโหลด…</div></div>
   ${!user?'<div class="chf off"><a href="#/login">Log In</a> เพื่อร่วมแชท (ทุกคนอ่านได้)</div>'
@@ -416,7 +416,8 @@ async function friendButton(box,otherId){
   const set=(label,fn,ghost)=>{box.innerHTML=`<button class="${ghost?'ghost':''}" id="fb1">${label}</button>`;$('#fb1').onclick=async()=>{$('#fb1').disabled=true;
     const{error}=await fn();if(error)alert(error.message);friendButton(box,otherId);refreshFriendBadge()}};
   if(!r)set('➕ เพิ่มเพื่อน',()=>sb.from('friendships').insert({addressee:otherId}));
-  else if(r.status=='accepted')set('✓ เป็นเพื่อนกัน (เลิกเป็นเพื่อน)',()=>confirm('เลิกเป็นเพื่อนกับคนนี้?')?sb.from('friendships').delete().eq('id',r.id):{},true);
+  else if(r.status=='accepted'){set('✓ เป็นเพื่อนกัน (เลิกเป็นเพื่อน)',()=>confirm('เลิกเป็นเพื่อนกับคนนี้?')?sb.from('friendships').delete().eq('id',r.id):{},true);
+    box.insertAdjacentHTML('beforeend',` <a class="btn" href="#/dm/${otherId}">💬 แชทส่วนตัว</a>`)}
   else if(r.requester==user.id)set('⏳ ส่งคำขอแล้ว (ยกเลิก)',()=>sb.from('friendships').delete().eq('id',r.id),true);
   else{box.innerHTML='<button id="fa">✓ ยอมรับคำขอ</button> <button class="ghost" id="fd">ปฏิเสธ</button>';
     const act=f=>async()=>{const{error}=await f();if(error)alert(error.message);friendButton(box,otherId);refreshFriendBadge()};
@@ -458,7 +459,7 @@ async function friends(){
     $('#fbody').innerHTML=g.length?g.map(r=>memberRow(prof(other(r)),
       tab=='in'?`<button data-a="${r.id}">ยอมรับ</button><button class="ghost" data-d="${r.id}">ปฏิเสธ</button>`
       :tab=='out'?`<button class="ghost" data-d="${r.id}">ยกเลิกคำขอ</button>`
-      :`<button class="ghost" data-d="${r.id}">เลิกเป็นเพื่อน</button>`)).join('')
+      :`<a class="btn" href="#/dm/${other(r)}">💬 แชท</a><button class="ghost" data-d="${r.id}">เลิกเป็นเพื่อน</button>`)).join('')
       :`<div class="card mut">${tab=='list'?'ยังไม่มีเพื่อน ลองค้นหาสมาชิกด้านบนแล้วกดเพิ่มเพื่อนได้เลย':'ไม่มีรายการ'}</div>`;
     $('#fbody').querySelectorAll('[data-a]').forEach(b=>b.onclick=async()=>{b.disabled=true;
       const{error}=await sb.from('friendships').update({status:'accepted'}).eq('id',b.dataset.a);if(error)alert(error.message);friends();refreshFriendBadge()});
@@ -466,4 +467,70 @@ async function friends(){
       if(tab=='list'&&!confirm('เลิกเป็นเพื่อนกับคนนี้?'))return;b.disabled=true;
       const{error}=await sb.from('friendships').delete().eq('id',b.dataset.d);if(error)alert(error.message);friends();refreshFriendBadge()})};
   paint();refreshFriendBadge();
+}
+
+
+// ================= แชทส่วนตัว (เฉพาะเพื่อน เห็นกันแค่ 2 คน) =================
+async function dm(peerId){
+  if(need())return;
+  chatLeave();const tok=CH.tok;
+  app.innerHTML='<div class="card mut">กำลังโหลด…</div>';
+  const{data:fr,error}=await sb.from('friendships').select('requester,addressee').eq('status','accepted');
+  if(tok!=CH.tok)return;
+  if(error){app.innerHTML=`<div class="card bad">โหลดไม่สำเร็จ: ${esc(error.message)} (ถ้าเพิ่งเริ่มใช้ ให้รัน friends.sql และ dm.sql ใน Supabase ก่อน)</div>`;return}
+  const ids=(fr||[]).map(r=>r.requester==user.id?r.addressee:r.requester);
+  await loadProfiles([...ids,peerId]);
+  if(tok!=CH.tok)return;
+  if(!peerId){
+    if(!ids.length){app.innerHTML='<div class="card">ยังไม่มีเพื่อนให้แชทด้วย — <a href="#/friends">ไปเพิ่มเพื่อนก่อน</a></div>';return}
+    peerId=ids[0];history.replaceState(null,'','#/dm/'+peerId)}
+  if(!ids.includes(peerId)){app.innerHTML='<p><a href="#/friends">← กลับหน้าเพื่อน</a></p><div class="card bad">แชทส่วนตัวใช้ได้เฉพาะคนที่เป็นเพื่อนกันแล้ว</div>';return}
+  const peer=prof(peerId);
+  CH.cur={id:'dm-'+peerId,name:peer.name,dm:true};CH.msgs=[];CH.ids=new Set();CH.older=false;CH.table='dm_messages';
+  CH.filter=q=>q.or(`and(user_id.eq.${user.id},peer_id.eq.${peerId}),and(user_id.eq.${peerId},peer_id.eq.${user.id})`);
+  const norm=r=>(r.channel_id=CH.cur.id,r);
+  app.innerHTML=`<div class="chat"><aside class="chl"><div class="sec">แชทกับเพื่อน</div>${ids.map(i=>`<a href="#/dm/${i}" class="chi ${i==peerId?'on':''}"><span>${esc(prof(i).name)}</span></a>`).join('')}<a href="#/chat" class="chi"><span># ห้องแชทรวม</span></a></aside>
+  <section class="chm"><header class="chh"><b>💬 <a href="#/u/${peerId}" class="pname">${esc(peer.name)}</a></b><span class="mut chd">🔒 เห็นกันแค่ 2 คน</span><span class="live" id="live">○ กำลังเชื่อมต่อ</span></header>
+  <div class="msgs" id="msgs"><div class="mut" style="padding:12px">กำลังโหลด…</div></div>
+  ${myProf?.banned?'<div class="chf off bad">บัญชีของคุณถูกระงับการแชท</div>':`<div class="chf"><div id="cprev"></div><div class="chrow"><button class="ghost" id="cimg" type="button" title="แนบรูป">🖼️</button><input type="file" id="cfile" accept="image/*" hidden>
+    <textarea id="ci" rows="1" maxlength="2000" placeholder="ข้อความถึง ${esc(peer.name)}  (Enter = ส่ง, Shift+Enter = ขึ้นบรรทัดใหม่)"></textarea><button id="csend">ส่ง</button></div><div class="mut" id="cmsg"></div></div>`}</section></div>`;
+  const{data}=await CH.filter(sb.from('dm_messages').select('*')).order('created_at',{ascending:false}).limit(CHAT_PER+1);
+  if(tok!=CH.tok)return;
+  const rows=data||[];CH.older=rows.length>CHAT_PER;rows.splice(CHAT_PER);rows.reverse();rows.forEach(norm);
+  await loadProfiles(rows.map(r=>r.user_id));await loadProfiles([user.id]);
+  if(tok!=CH.tok)return;
+  rows.forEach(r=>CH.ids.add(r.id));CH.msgs=rows;paintMsgs(true);
+  if(matchMedia('(max-width:700px)').matches)$('.chat')?.scrollIntoView({block:'start'});
+  CH.sub=sb.channel('dm-'+user.id+'-'+peerId)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'dm_messages',filter:'peer_id=eq.'+user.id},p=>{if(tok==CH.tok&&p.new.user_id==peerId)addMsg(norm(p.new))})
+    .on('postgres_changes',{event:'DELETE',schema:'public',table:'dm_messages'},p=>{if(tok==CH.tok)dropMsg(p.old.id)})
+    .subscribe(st=>{const l=$('#live');if(l){const ok=st=='SUBSCRIBED';l.textContent=ok?'● ออนไลน์':'○ กำลังเชื่อมต่อ';l.classList.toggle('on',ok)}});
+  CH.poll=setInterval(async()=>{ // สำรองกรณี Realtime ไม่ทำงาน
+    const since=CH.msgs[CH.msgs.length-1]?.created_at;if(!since||document.hidden)return;
+    const{data:nw}=await CH.filter(sb.from('dm_messages').select('*')).gt('created_at',since).order('created_at').limit(50);
+    if(tok==CH.tok&&nw?.length)nw.forEach(m=>addMsg(norm(m)));
+  },15000);
+  $('#msgs').addEventListener('click',async e=>{
+    const z=e.target.closest('[data-zoom]');if(z)return zoomImg(z.src);
+    const d=e.target.closest('[data-del]');if(!d||!confirm('ลบข้อความนี้?'))return;
+    const m=CH.msgs.find(x=>x.id==d.dataset.del);
+    const{error}=await sb.from('dm_messages').delete().eq('id',d.dataset.del);
+    if(error)return alert(error.message);if(m)removeImg(m.image_url);dropMsg(d.dataset.del);
+  });
+  if(!$('#csend'))return;
+  const pk=imgPick($('#cimg'),$('#cfile'),$('#cprev')),ta=$('#ci'),btn=$('#csend');let sending=false;
+  const msg=(t,bad)=>{const m=$('#cmsg');if(m){m.textContent=t||'';m.className='mut'+(bad?' bad':'')}};
+  const grow=()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,140)+'px'};ta.oninput=grow;
+  const send=async()=>{
+    const body=ta.value.trim(),file=pk.get();if((!body&&!file)||sending)return;
+    sending=true;btn.disabled=true;let url=null;
+    try{
+      if(file){msg('กำลังอัปโหลดรูป…');url=await uploadImg(file,1280)}
+      const{data:m,error}=await sb.from('dm_messages').insert({peer_id:peerId,body,image_url:url}).select().single();
+      if(error){if(url)removeImg(url);throw error}
+      ta.value='';grow();pk.clear();msg('');if(tok==CH.tok)addMsg(norm(m),true);
+    }catch(e){msg(e.message||'ส่งไม่สำเร็จ (ต้องเป็นเพื่อนกัน)',true)}
+    sending=false;btn.disabled=false;ta.focus();
+  };
+  btn.onclick=send;ta.onkeydown=e=>{if(e.key=='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}};
 }

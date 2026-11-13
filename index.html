@@ -424,8 +424,8 @@ async function admin(){
 }
 
 // ---------- Router ----------
-const pages={news,feed,chat,friends,u:profilePage,logs,tours,login,admin,swiss,stats};
-async function go(){chatLeave();document.querySelectorAll('.ov').forEach(o=>o.remove());const[p,id]=(location.hash.slice(2)||'news').split('/');$('main').classList.toggle('wide',p=='chat');$('#banner').style.display=(p=='news'||!pages[p])?'block':'none';document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#/'+(pages[p]?p:'news')));await(pages[p]||news)(id)}
+const pages={news,feed,chat,dm,friends,u:profilePage,logs,tours,login,admin,swiss,stats};
+async function go(){chatLeave();document.querySelectorAll('.ov').forEach(o=>o.remove());const[p,id]=(location.hash.slice(2)||'news').split('/');$('main').classList.toggle('wide',p=='chat'||p=='dm');$('#banner').style.display=(p=='news'||!pages[p])?'block':'none';document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#/'+(pages[p]?p:'news')));await(pages[p]||news)(id)}
 sb.auth.onAuthStateChange((_,s)=>{user=s?.user||null;
   setTimeout(async()=>{role='user';myProf=null;
     if(user){const{data}=await sb.from('profiles').select('role,display_name,avatar_url,bio,banned').eq('id',user.id).maybeSingle();myProf=data;role=data?.role||'user'}

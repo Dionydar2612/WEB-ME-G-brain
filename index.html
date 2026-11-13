@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>จี่สมอง</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="community.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
@@ -68,7 +68,7 @@ a.btn{display:inline-block;background:var(--pri);color:#fff;padding:10px 18px;bo
 .ctabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:8px 0 12px}
 .ctab{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-top:4px solid var(--cc);border-radius:6px;padding:12px 6px;font-weight:600}.ctab:hover{background:var(--bd)}.ctab.on{background:var(--cc);color:#fff;border-color:var(--cc)}.ctab.on.cat-columns{color:#222}
 .chip.src{font-size:12px;border:1px solid var(--bd);background:var(--card)}.chip.src.pg{background:#1877f2;color:#fff;border-color:#1877f2}.chip.src.off{background:var(--card);color:var(--tx)}#nsrc{display:flex;flex-wrap:wrap;margin:8px 0}
-</style></head><body>
+</style><link rel="stylesheet" href="theme.css"></head><body>
 <nav><div class="brand"><img src="assets/mascot.webp" alt=""><b id="site"></b></div>
 <div class="sec">คอมมูนิตี้</div><a href="#/news">📰 ข่าวสารจากเพจ</a><a href="#/feed">💬 ฟีดชุมชน</a><a href="#/chat">🗨️ ห้องแชท</a><a href="#/friends">👥 เพื่อน<span id="fbadge"></span></a>
 <div class="sec">เครื่องมือ</div><a href="#/tours">🏆 Tournaments</a><a href="#/swiss">🧮 คำนวณ Cut</a>
@@ -432,4 +432,8 @@ sb.auth.onAuthStateChange((_,s)=>{user=s?.user||null;
     $('#auth').textContent=user?'👤 บัญชีของฉัน':'🔑 Log In';
     document.querySelectorAll('.adm').forEach(e=>e.style.display=isAdmin()?'block':'none');refreshFriendBadge();go()},0)});
 addEventListener('hashchange',go);
+</script>
+<script>/* toast แทน alert (ไม่บล็อกหน้า) — ฟังก์ชันเดิมที่เรียก alert() ใช้ได้ตามเดิม */
+(()=>{const box=document.createElement('div');box.id='toasts';box.setAttribute('role','status');box.setAttribute('aria-live','polite');document.body.appendChild(box);
+window.alert=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;box.appendChild(t);setTimeout(()=>t.classList.add('out'),3200);setTimeout(()=>t.remove(),3600)}})();
 </script></body></html>

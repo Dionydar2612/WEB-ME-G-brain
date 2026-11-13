@@ -194,7 +194,7 @@ function chatLeave(){
 }
 const msgHtml=(m,compact)=>{
   const a=prof(m.user_id),img=okImg(m.image_url),can=user&&(m.user_id==user.id||(isAdmin()&&!CH.cur?.dm));
-  return `<div class="msg${compact?' cp':''}" data-id="${m.id}">${compact?`<span class="mt">${clock(m.created_at)}</span>`:avatar(a)}
+  return `<div class="msg${compact?' cp':''}${user&&m.user_id==user.id?' own':''}" data-id="${m.id}">${compact?`<span class="mt">${clock(m.created_at)}</span>`:avatar(a)}
   <div class="mb">${compact?'':`<div class="mh"><a href="#/u/${m.user_id}" class="pname">${esc(a.name)}</a>${a.role=='admin'?'<span class="badge a">Admin</span>':''}<span class="mut">${dayLabel(m.created_at)}</span></div>`}
   ${m.body?`<div class="mtx">${rich(m.body)}</div>`:''}${img?`<img class="mimg" src="${esc(img)}" loading="lazy" alt="" data-zoom>`:''}</div>
   ${can?`<button class="ic mdel" data-del="${m.id}" title="ลบข้อความ">🗑️</button>`:''}</div>`};

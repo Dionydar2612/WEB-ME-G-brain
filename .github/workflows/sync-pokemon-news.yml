@@ -1,5 +1,5 @@
 name: sync-pokemon-news
-# Optional external-source news sync. Disabled by default; use manual editorial posts unless source terms permit automation.
+# ตรวจข่าวจาก Pokémon Card Game Asia ทุก 30 นาที (ช่วงเวลาที่ปรับได้จริงตั้งในหน้า Admin: scraper ข้ามรอบถ้ายังไม่ถึงเวลา)
 on:
   schedule: [{cron: "*/30 * * * *"}]
   workflow_dispatch:
@@ -17,12 +17,11 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          NEWS_SYNC_ENABLED: ${{ vars.NEWS_SYNC_ENABLED || 'false' }}
           AI_ENABLED: ${{ vars.AI_ENABLED || 'false' }}
           AI_PROVIDER: ${{ vars.AI_PROVIDER || 'anthropic' }}
           AI_MODEL: ${{ vars.AI_MODEL }}
           AI_BASE_URL: ${{ vars.AI_BASE_URL }}
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
-          ALLOW_SOURCE_IMAGES: 'false'
-          STORE_CONTENT: 'false'
+          ALLOW_SOURCE_IMAGES: ${{ vars.ALLOW_SOURCE_IMAGES || 'false' }}
+          STORE_CONTENT: ${{ vars.STORE_CONTENT || 'false' }}
           ERROR_WEBHOOK_URL: ${{ secrets.ERROR_WEBHOOK_URL }}
